@@ -1,4 +1,5 @@
 #include <Hooks.h>
+#include <ClibUtil/editorID.hpp>
 namespace MPL::Hooks
 {
     struct LoadLT
@@ -10,18 +11,18 @@ namespace MPL::Hooks
             auto sta = MPL::Config::StatData::GetSingleton();
             if (a_mod->GetFilename() == sta->conf.sTemplateSearchFile)
             {
-                sta->Templates.modded.insert(std::make_pair(a_ref->GetFormEditorID(), a_ref->GetFormID()));
+                sta->Templates.modded.insert(std::make_pair(clib_util::editorID::get_editorID(a_ref), a_ref->GetFormID()));
 #ifdef DEBUG
-                logger::info("Loaded Modded Template {} {}:{:06X}", a_ref->GetFormEditorID(), a_mod->GetFilename(), a_ref->GetLocalFormID());
+                logger::info("Loaded Modded Template {} {}:{:06X}", clib_util::editorID::get_editorID(a_ref), a_mod->GetFilename(), a_ref->GetLocalFormID());
 #endif
             }
             else
             {
-                if (!sta->Templates.unmodded.contains(a_ref->GetFormEditorID()))
+                if (!sta->Templates.unmodded.contains(clib_util::editorID::get_editorID(a_ref)))
                 {
-                    sta->Templates.unmodded.insert(std::make_pair(a_ref->GetFormEditorID(), a_ref->GetFormID()));
+                    sta->Templates.unmodded.insert(std::make_pair(clib_util::editorID::get_editorID(a_ref), a_ref->GetFormID()));
 #ifdef DEBUG
-                    logger::info("Loaded Unmodded Template {} {}:{:06X}", a_ref->GetFormEditorID(), a_mod->GetFilename(), a_ref->GetLocalFormID());
+                    logger::info("Loaded Unmodded Template {} {}:{:06X}", clib_util::editorID::get_editorID(a_ref), a_mod->GetFilename(), a_ref->GetLocalFormID());
 #endif
                 }
             }
@@ -39,18 +40,18 @@ namespace MPL::Hooks
             auto sta = MPL::Config::StatData::GetSingleton();
             if (a_mod->GetFilename() == sta->conf.sISpaceSearchFile)
             {
-                sta->Imagespaces.modded.insert(std::make_pair(a_ref->GetFormEditorID(), a_ref->GetFormID()));
+                sta->Imagespaces.modded.insert(std::make_pair(clib_util::editorID::get_editorID(a_ref), a_ref->GetFormID()));
 #ifdef DEBUG
-                logger::info("Loaded Modded Imagespace {} {}:{:06X}", a_ref->GetFormEditorID(), a_mod->GetFilename(), a_ref->GetLocalFormID());
+                logger::info("Loaded Modded Imagespace {} {}:{:06X}", clib_util::editorID::get_editorID(a_ref), a_mod->GetFilename(), a_ref->GetLocalFormID());
 #endif
             }
             else
             {
-                if (!sta->Imagespaces.unmodded.contains(a_ref->GetFormEditorID()))
+                if (!sta->Imagespaces.unmodded.contains(clib_util::editorID::get_editorID(a_ref)))
                 {
-                    sta->Imagespaces.unmodded.insert(std::make_pair(a_ref->GetFormEditorID(), a_ref->GetFormID()));
+                    sta->Imagespaces.unmodded.insert(std::make_pair(clib_util::editorID::get_editorID(a_ref), a_ref->GetFormID()));
 #ifdef DEBUG
-                    logger::info("Loaded Unmodded Imagespace {} {}:{:06X}", a_ref->GetFormEditorID(), a_mod->GetFilename(), a_ref->GetLocalFormID());
+                    logger::info("Loaded Unmodded Imagespace {} {}:{:06X}", clib_util::editorID::get_editorID(a_ref), a_mod->GetFilename(), a_ref->GetLocalFormID());
 #endif
                 }
             }

@@ -20,12 +20,14 @@ namespace MPL::Config
             if (cfg)
             {
                 this->conf = *cfg;
+                logger::info("Template File: {}", this->conf.sTemplateSearchFile);
+                logger::info("IS File: {}: ",this->conf.sISpaceSearchFile);
             }
             else
             {
                 logger::error("Error {}, using defaults", cfg.error().what());
                 this->conf.sTemplateSearchFile = "ATLM.esp";
-                this->conf.sISpaceSearchFile = "ATLM - HDR.esp";
+                this->conf.sISpaceSearchFile = "ATLM.esp";
                 rfl::toml::save("Data/SKSE/Plugins/LightingUtil.toml", this->conf);
             }
         }
