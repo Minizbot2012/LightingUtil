@@ -11,7 +11,7 @@
 #include <rfl/toml.hpp>
 #include <windows.h>
 // clang-format on
-#define DEBUG
+// #define DEBUG
 #ifdef SKYRIM_AE
 #    define OFFSET(se, ae) ae
 #    define OFFSET_3(se, ae, vr) ae
