@@ -11,18 +11,18 @@ namespace MPL::Hooks
             auto sta = MPL::Config::StatData::GetSingleton();
             if (a_mod->GetFilename() == sta->conf.sTemplateSearchFile)
             {
-                sta->Templates.modded.insert(std::make_pair(clib_util::editorID::get_editorID(a_ref), a_ref->GetFormID()));
+                sta->Templates.modded.insert(std::make_pair(a_ref->GetFormEditorID(), a_ref->GetFormID()));
 #ifdef DEBUG
-                logger::info("Loaded Modded Template {} {}:{:06X}", clib_util::editorID::get_editorID(a_ref), a_mod->GetFilename(), a_ref->GetLocalFormID());
+                logger::info("Loaded Modded Template {} {}:{:06X}", a_ref->GetFormEditorID(), a_mod->GetFilename(), a_ref->GetLocalFormID());
 #endif
             }
             else
             {
-                if (!sta->Templates.unmodded.contains(clib_util::editorID::get_editorID(a_ref)))
+                if (!sta->Templates.unmodded.contains(a_ref->GetFormEditorID()))
                 {
-                    sta->Templates.unmodded.insert(std::make_pair(clib_util::editorID::get_editorID(a_ref), a_ref->GetFormID()));
+                    sta->Templates.unmodded.insert(std::make_pair(a_ref->GetFormEditorID(), a_ref->GetFormID()));
 #ifdef DEBUG
-                    logger::info("Loaded Unmodded Template {} {}:{:06X}", clib_util::editorID::get_editorID(a_ref), a_mod->GetFilename(), a_ref->GetLocalFormID());
+                    logger::info("Loaded Unmodded Template {} {}:{:06X}", a_ref->GetFormEditorID(), a_mod->GetFilename(), a_ref->GetLocalFormID());
 #endif
                 }
             }
