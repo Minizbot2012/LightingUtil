@@ -2,7 +2,7 @@ vcpkg_from_git(
   OUT_SOURCE_PATH SOURCE_PATH
   URL https://github.com/powerof3/CommonLibSSE
   HEAD_REF dev
-  REF 894a31778beefda1eff07ddf4db4c549ef13fcc9
+  REF b106f28746dd678d856fcbc5f5c3a547942a15e6
 )
 
 set(VCPKG_POLICY_EMPTY_PACKAGE enabled)
