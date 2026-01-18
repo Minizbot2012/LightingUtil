@@ -6,7 +6,7 @@
 extern "C" DLLEXPORT auto SKSEPlugin_Version = []()
 {
     SKSE::PluginVersionData v;
-    v.PluginVersion({MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH});
+    v.PluginVersion({ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH });
     v.PluginName(MPL::Plugin::PROJECT.data());
     v.AuthorName("Mini");
     v.UsesAddressLibrary();
@@ -55,7 +55,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     MPL::Hooks::Install();
-    MPL::Config::StatData::GetSingleton()->LoadConfig();
     SKSE::GetMessagingInterface()->RegisterListener(msg_cb);
     return true;
 }

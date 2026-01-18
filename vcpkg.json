@@ -4,8 +4,7 @@
   "dependencies": [
     "clib-util",
     {
-      "name": "reflectcpp",
-      "features": ["toml"]
+      "name": "reflectcpp"
     }
   ],
   "features": {

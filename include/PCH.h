@@ -8,7 +8,8 @@
 #include <REX/REX.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
-#include <rfl/toml.hpp>
+#include <rfl/json.hpp>
+#include <rfl.hpp>
 #include <windows.h>
 // clang-format on
 // #define DEBUG
@@ -25,5 +26,4 @@
 #define DLLEXPORT __declspec(dllexport)
 namespace logger = SKSE::log;
 using namespace std::literals;
-
 #include <Hooking.h>
