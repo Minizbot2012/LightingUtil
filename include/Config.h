@@ -1,4 +1,8 @@
 #pragma once
+#include <Config/Cell.h>
+#include <Config/Common.h>
+#include <Config/ImageSpace.h>
+#include <Config/Templates.h>
 #include <filesystem>
 #include <format>
 #include <string_view>
@@ -32,30 +36,24 @@ namespace MPL::Config
         UMMPair Imagespaces;
         ListPairs Cells;
     };
+
     template <typename T>
         requires Named<T> && Patch<T>
     void LoadConfigFile(typename T::Patch* form, std::string_view a_mod)
     {
-        if(std::filesystem::exists("expo")) {
-            if(std::filesystem::exists(std::format("expo/{}", T::Name))) {
-                if(!std::filesystem::exists(std::format("expo/{}/{}", T::Name, a_mod))) {
-                    std::filesystem::create_directories(std::format("expo/{}/{}", T::Name, a_mod));
-                }
-                rfl::json::save(std::format("expo/{}/{}/{:06X}.json", T::Name, a_mod, form->GetLocalFormID()), T::From(form), rfl::json::pretty);
-            }
-
-        }
         auto* dh = RE::TESDataHandler::GetSingleton();
         for (auto lf : dh->files)
         {
             std::string sum(lf->summary.c_str());
             if (sum.contains("[Luma]"))
             {
-                RE::BSResourceNiBinaryStream fileStream(std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), a_mod, form->GetLocalFormID()));
+                auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), a_mod, form->GetLocalFormID());
+                RE::BSResourceNiBinaryStream fileStream(file_name);
                 if (fileStream.good())
                 {
                     if (fileStream.stream->totalSize > 0)
                     {
+                        logger::info("Loading file {}", file_name);
                         std::string contents;
                         contents.resize(fileStream.stream->totalSize);
                         fileStream.read(contents.data(), fileStream.stream->totalSize);
@@ -79,17 +77,19 @@ namespace MPL::Config
             {
                 if (std::filesystem::is_directory(dir))
                 {
-                    auto pth = dir.path() / a_mod / std::format("{:6X}.json", form->GetLocalFormID());
-                    if (std::filesystem::exists(pth))
+                    auto file_name = dir.path() / a_mod / std::format("{:6X}.json", form->GetLocalFormID());
+                    if (std::filesystem::exists(file_name))
                     {
-                        auto pch = rfl::json::load<T>(pth.string(), 0);
+                        logger::info("Loading file {}", file_name.string());
+                        auto pch = rfl::json::load<T>(file_name.string(), 0);
                         if (pch.has_value())
                         {
+                            logger::info("Applying file {}", file_name.string());
                             pch->Apply(form);
                         }
                         else
                         {
-                            logger::info("Error {} {}:{:06X} {}", pth.string(), a_mod, form->GetLocalFormID(), pch.error().what());
+                            logger::info("Error {} {}:{:06X} {}", file_name.string(), a_mod, form->GetLocalFormID(), pch.error().what());
                         }
                     }
                 }

@@ -8,7 +8,7 @@ on:
 
 env:
   PRESET: "vs2022-windows-vcpkg-vr"
-  PROJECT_NAME: LightingUtil
+  PROJECT_NAME: LumaUtil
   VCPKG_ROOT: "C:\\vcpkg"
 
 permissions:

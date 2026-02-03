@@ -1,8 +1,6 @@
-#include <Config.h>
+#include <ClibUtil/editorID.hpp>
 #include <Hooking.h>
 #include <Hooks.h>
-#include <ClibUtil/editorID.hpp>
-#include <utility>
 namespace MPL::Hooks
 {
     struct LoadLT
@@ -68,14 +66,15 @@ namespace MPL::Hooks
     struct LoadCELL
     {
         using Target = RE::TESObjectCELL;
-        static inline void thunk(Target* a_ref, RE::TESFile * a_mod)
+        static inline void thunk(Target* a_ref, RE::TESFile* a_mod)
         {
             func(a_ref, a_mod);
 #ifdef DEBUG
             logger::info("{}:{:08X}", a_ref->GetFile(0)->GetFilename(), a_ref->GetFormID());
 #endif
             auto sta = MPL::Config::StatData::GetSingleton();
-            if(!sta->Cells.loaded.contains(a_ref->GetFormID())) {
+            if (!sta->Cells.loaded.contains(a_ref->GetFormID()))
+            {
                 sta->Cells.loaded.insert(std::make_pair(a_ref->GetFormID(), a_mod->GetFilename()));
             }
         }
