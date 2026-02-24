@@ -1,0 +1,38 @@
+name: Build Skyrim Scripts
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+env:
+  PRESET: "vs2022-windows-vcpkg-ae"
+  PROJECT_NAME: CellUtil
+  VCPKG_ROOT: "C:\\vcpkg"
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2025
+    steps:
+    - uses: actions/checkout@v5
+    - name: Archive
+      run: 7z a ${{ env.PROJECT_NAME }}-Scripts.zip ./scripts/**
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: "Skyrim Scripts"
+        path: |
+            ./scripts/**
+    - name: Create & Upload Release
+      id: upload-release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ env.PROJECT_NAME }}-Scripts.zip
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: ${{ env.PROJECT_NAME }} ${{ github.ref_name }}
+      if: github.ref_type == 'tag'
