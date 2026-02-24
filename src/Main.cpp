@@ -1,6 +1,7 @@
 #include <Config.h>
 #include <Hooks.h>
 #include <Plugin.h>
+#include <Papyrus.h>
 #include <REL/Version.h>
 
 #ifdef SKYRIM_AE
@@ -51,11 +52,45 @@ void msg_cb(SKSE::MessagingInterface::Message* msg)
     }
 }
 
+void Serialize(SKSE::SerializationInterface* ser)
+{
+    MPL::Config::StatData::GetSingleton()->cellLoad.Save(ser, 'CLCH', 0x1);
+}
+
+void Deserialize(SKSE::SerializationInterface* ser)
+{
+    uint32_t type;
+    uint32_t version;
+    uint32_t len;
+    while (ser->GetNextRecordInfo(type, version, len))
+    {
+        switch (type)
+        {
+        case 'CLCH':
+            MPL::Config::StatData::GetSingleton()->cellLoad.Load(ser);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void Revert(SKSE::SerializationInterface* ser)
+{
+    MPL::Config::StatData::GetSingleton()->cellLoad.Revert(ser);
+}
+
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     MPL::Hooks::Install();
     SKSE::GetMessagingInterface()->RegisterListener(msg_cb);
+    SKSE::GetPapyrusInterface()->Register(MPL::Papyrus::Bind);
+    auto ser = SKSE::GetSerializationInterface();
+    ser->SetUniqueID('CLTL');
+    ser->SetSaveCallback(Serialize);
+    ser->SetLoadCallback(Deserialize);
+    ser->SetRevertCallback(Revert);
     return true;
 }

@@ -31,6 +31,7 @@ namespace MPL::Config
     class StatData : public REX::Singleton<StatData>
     {
     public:
+        SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         void PostProcess();
         UMMPair Templates;
         UMMPair Imagespaces;

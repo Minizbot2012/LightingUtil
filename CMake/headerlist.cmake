@@ -6,5 +6,6 @@ set(headers ${headers}
 	include/Config/ImageSpace.h
 	include/Config/Cell.h
 	include/Config.h
+	include/Papyrus.h
 	include/Hooks.h
 )
