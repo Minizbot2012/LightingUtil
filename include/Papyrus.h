@@ -3,7 +3,7 @@
 #include <Config.h>
 namespace MPL::Papyrus
 {
-    std::string GetRegion(RE::StaticFunctionTag*, RE::TESObjectCELL* cl)
+    inline std::string GetRegion(RE::StaticFunctionTag*, RE::TESObjectCELL* cl)
     {
         if (cl != nullptr)
         {
@@ -20,7 +20,7 @@ namespace MPL::Papyrus
         return "";
     }
 
-    void ChangeRegion(RE::StaticFunctionTag*, RE::TESObjectCELL* cl, std::string region)
+    inline void ChangeRegion(RE::StaticFunctionTag*, RE::TESObjectCELL* cl, std::string region)
     {
         if (cl != nullptr)
         {
@@ -53,19 +53,19 @@ namespace MPL::Papyrus
             }
         }
     }
-    void RegisterForOnCellLoadForm(RE::StaticFunctionTag*, RE::TESForm* listener)
+    inline void RegisterForOnCellLoadForm(RE::StaticFunctionTag*, RE::TESForm* listener)
     {
         MPL::Config::StatData::GetSingleton()->cellLoad.Register(listener);
     }
-    void RegisterForOnCellLoadAlias(RE::StaticFunctionTag*, RE::BGSRefAlias* listener)
+    inline void RegisterForOnCellLoadAlias(RE::StaticFunctionTag*, RE::BGSRefAlias* listener)
     {
         MPL::Config::StatData::GetSingleton()->cellLoad.Register(listener);
     }
-    void RegisterForOnCellLoadMgef(RE::StaticFunctionTag*, RE::ActiveEffect* listener)
+    inline void RegisterForOnCellLoadMgef(RE::StaticFunctionTag*, RE::ActiveEffect* listener)
     {
         MPL::Config::StatData::GetSingleton()->cellLoad.Register(listener);
     }
-    bool Bind(RE::BSScript::IVirtualMachine* vm)
+    inline bool Bind(RE::BSScript::IVirtualMachine* vm)
     {
         vm->RegisterFunction("GetRegion", "CLUtil", GetRegion);
         vm->RegisterFunction("ChangeRegion", "CLUtil", ChangeRegion);

@@ -84,7 +84,7 @@ namespace MPL::Config
                     if (std::filesystem::exists(file_name))
                     {
                         logger::info("Loading file {}", file_name.string());
-                        auto pch = rfl::json::load<T>(file_name.string(), 0);
+                        auto pch = rfl::json::load<T>(file_name.string());
                         if (pch.has_value())
                         {
                             logger::info("Applying file {}", file_name.string());
