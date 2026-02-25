@@ -1,4 +1,5 @@
 #pragma once
+#include <ClibUtil/editorID.hpp>
 #include <Config/Cell.h>
 #include <Config/Common.h>
 #include <Config/ImageSpace.h>
@@ -7,6 +8,7 @@
 #include <format>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 namespace MPL::Config
 {
     template <typename T>
@@ -26,7 +28,7 @@ namespace MPL::Config
     };
     struct ListPairs
     {
-        std::unordered_map<RE::FormID, std::string_view> loaded;
+        std::unordered_set<RE::FormID> loaded;
     };
     class StatData : public REX::Singleton<StatData>
     {
@@ -40,7 +42,7 @@ namespace MPL::Config
 
     template <typename T>
         requires Named<T> && Patch<T>
-    void LoadConfigFile(typename T::Patch* form, std::string_view a_mod)
+    void LoadConfigFile(typename T::Patch* form)
     {
         auto* dh = RE::TESDataHandler::GetSingleton();
         for (auto lf : dh->files)
@@ -48,7 +50,7 @@ namespace MPL::Config
             std::string sum(lf->summary.c_str());
             if (sum.contains("[Luma]"))
             {
-                auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), a_mod, form->GetLocalFormID());
+                auto file_name = std::format("Luma/{}/{}/{}.json", T::Name, lf->GetFilename(), clib_util::editorID::get_editorID(form));
                 RE::BSResourceNiBinaryStream fileStream(file_name);
                 if (fileStream.good())
                 {
@@ -65,7 +67,7 @@ namespace MPL::Config
                         }
                         else
                         {
-                            logger::info("Error {} {}:{:06X} {}", lf->GetFilename(), a_mod, form->GetLocalFormID(), pch.error().what());
+                            logger::info("Error {} {}", clib_util::editorID::get_editorID(form), pch.error().what());
                         }
                     }
                 }
@@ -78,7 +80,7 @@ namespace MPL::Config
             {
                 if (std::filesystem::is_directory(dir))
                 {
-                    auto file_name = dir.path() / a_mod / std::format("{:6X}.json", form->GetLocalFormID());
+                    auto file_name = dir.path() / std::format("{}.json", clib_util::editorID::get_editorID(form));
                     if (std::filesystem::exists(file_name))
                     {
                         logger::info("Loading file {}", file_name.string());
@@ -90,7 +92,7 @@ namespace MPL::Config
                         }
                         else
                         {
-                            logger::info("Error {} {}:{:06X} {}", file_name.string(), a_mod, form->GetLocalFormID(), pch.error().what());
+                            logger::info("Error {} {} {}", file_name.string(), clib_util::editorID::get_editorID(form), pch.error().what());
                         }
                     }
                 }

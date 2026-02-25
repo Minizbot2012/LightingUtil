@@ -75,7 +75,7 @@ namespace MPL::Hooks
             auto sta = MPL::Config::StatData::GetSingleton();
             if (!sta->Cells.loaded.contains(a_ref->GetFormID()))
             {
-                sta->Cells.loaded.insert(std::make_pair(a_ref->GetFormID(), a_mod->GetFilename()));
+                sta->Cells.loaded.insert(a_ref->GetFormID());
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;

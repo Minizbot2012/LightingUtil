@@ -16,7 +16,7 @@ namespace MPL::Config
                 RE::BGSLightingTemplate* nw = RE::TESForm::LookupByID<RE::BGSLightingTemplate>(this->Templates.modded.at(ed));
                 um->data = nw->data;
                 um->directionalAmbientLightingColors = nw->directionalAmbientLightingColors;
-                MPL::Config::LoadConfigFile<MPL::Config::Template::LightingTemplate>(um, um->GetFile(0)->GetFilename());
+                MPL::Config::LoadConfigFile<MPL::Config::Template::LightingTemplate>(um);
             }
         }
         for (auto [ed, id] : this->Imagespaces.modded)
@@ -29,13 +29,13 @@ namespace MPL::Config
                 RE::TESImageSpace* um = RE::TESForm::LookupByID<RE::TESImageSpace>(this->Imagespaces.unmodded.at(ed));
                 RE::TESImageSpace* nw = RE::TESForm::LookupByID<RE::TESImageSpace>(this->Imagespaces.modded.at(ed));
                 um->data = nw->data;
-                MPL::Config::LoadConfigFile<MPL::Config::ImageSpace::ImageSpace>(um, um->GetFile(0)->GetFilename());
+                MPL::Config::LoadConfigFile<MPL::Config::ImageSpace::ImageSpace>(um);
             }
         }
-        for (auto [id, mod] : this->Cells.loaded)
+        for (auto id : this->Cells.loaded)
         {
             auto* um = RE::TESForm::LookupByID<RE::TESObjectCELL>(id);
-            MPL::Config::LoadConfigFile<MPL::Config::Cell::Cell>(um, mod);
+            MPL::Config::LoadConfigFile<MPL::Config::Cell::Cell>(um);
         };
     }
 }  // namespace MPL::Config
