@@ -70,69 +70,45 @@ namespace MPL::Config::Cell
         static constexpr std::string_view Name = "Cell";
         using Patch = RE::TESObjectCELL;
         std::optional<Flags> flags;
-        std::optional<std::string> skylight;
+        std::optional<MPL::Config::Form> skylight;
         std::optional<MPL::Config::Template::INTERIOR_DATA> lighting;
-        std::optional<std::string> lightTemplate;
-        std::optional<std::string> imagespace;
+        std::optional<MPL::Config::Form> lightTemplate;
+        std::optional<MPL::Config::Form> imagespace;
         void Apply(Patch* itm)
         {
             if (flags) this->flags->Apply(&itm->cellFlags);
             if (this->skylight)
             {
-                RE::ExtraCellSkyRegion* sky = nullptr;
+                RE::ExtraCellSkyRegion* dat = nullptr;
                 if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
                 {
-                    sky = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
+                    dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
                 }
                 else
                 {
-                    sky = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
-                    itm->extraList.Add(sky);
+                    dat = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
+                    itm->extraList.Add(dat);
                 }
-                auto spos = this->skylight->find(":");
-                if (spos != std::string::npos)
-                {
-                    sky->skyRegion = RE::TESForm::LookupByID<RE::TESRegion>(RE::TESDataHandler::GetSingleton()->LookupFormID(strtoul(this->skylight->substr(0, spos).c_str(), nullptr, 16), this->skylight->substr(spos + 1).c_str()));
-                }
-                else
-                {
-                    sky->skyRegion = RE::TESForm::LookupByEditorID<RE::TESRegion>(*this->skylight);
-                }
+                dat->skyRegion = this->skylight.value()->As<RE::TESRegion>();
             }
             if (this->lighting && itm->IsInteriorCell()) this->lighting->Apply(itm->cellData.interior);
             if (this->lightTemplate)
             {
-                auto spos = this->lightTemplate->find(":");
-                if (spos != std::string::npos)
-                {
-                    itm->lightingTemplate = RE::TESForm::LookupByID<RE::BGSLightingTemplate>(RE::TESDataHandler::GetSingleton()->LookupFormID(strtoul(this->lightTemplate->substr(0, spos).c_str(), nullptr, 16), this->lightTemplate->substr(spos + 1).c_str()));
-                }
-                else
-                {
-                    itm->lightingTemplate = RE::TESForm::LookupByEditorID<RE::BGSLightingTemplate>(*this->lightTemplate);
-                }
+                itm->lightingTemplate = this->lightTemplate.value()->As<RE::BGSLightingTemplate>();
             }
             if (this->imagespace)
             {
-                RE::ExtraCellImageSpace* is;
+                RE::ExtraCellImageSpace* dat = nullptr;
                 if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
                 {
-                    is = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
+                    dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
                 }
                 else
                 {
-                    is = RE::BSExtraData::Create<RE::ExtraCellImageSpace>();
-                    itm->extraList.Add(is);
+                    dat = RE::BSExtraData::Create<RE::ExtraCellImageSpace>();
+                    itm->extraList.Add(dat);
                 }
-                auto spos = this->imagespace->find(":");
-                if (spos != std::string::npos)
-                {
-                    is->imageSpace = RE::TESForm::LookupByID<RE::TESImageSpace>(RE::TESDataHandler::GetSingleton()->LookupFormID(strtoul(this->imagespace->substr(0, spos).c_str(), nullptr, 16), this->imagespace->substr(spos + 1).c_str()));
-                }
-                else
-                {
-                    is->imageSpace = RE::TESForm::LookupByEditorID<RE::TESImageSpace>(*this->imagespace);
-                }
+                dat->imageSpace = this->imagespace.value()->As<RE::TESImageSpace>();
             }
         }
         static Cell From(Patch* itm)
@@ -151,19 +127,19 @@ namespace MPL::Config::Cell
             }
             if (itm->lightingTemplate != NULL)
             {
-                cpy.lightTemplate = std::format("{:06X}:{}", itm->lightingTemplate->GetLocalFormID(), itm->lightingTemplate->GetFile(0)->GetFilename());
+                cpy.lightTemplate = Form::FromForm(itm->lightingTemplate);
             }
             if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
                 if (dat->imageSpace != NULL)
-                    cpy.imagespace = std::format("{:06X}:{}", dat->imageSpace->GetLocalFormID(), dat->imageSpace->GetFile(0)->GetFilename());
+                    cpy.imagespace = Form::FromForm(dat->imageSpace);
             }
             if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
                 if (dat->skyRegion != NULL)
-                    cpy.skylight = std::format("{:06X}:{}", dat->skyRegion->GetLocalFormID(), dat->skyRegion->GetFile(0)->GetFilename());
+                    cpy.skylight = Form::FromForm(dat->skyRegion);
             }
             return cpy;
         }

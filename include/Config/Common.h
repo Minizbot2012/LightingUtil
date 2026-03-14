@@ -1,4 +1,5 @@
 #pragma once
+#include<Forms.h>
 namespace MPL::Config
 {
     struct Color
