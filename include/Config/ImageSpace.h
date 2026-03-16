@@ -1,4 +1,5 @@
 #pragma once
+#include <Config/Common.h>
 namespace MPL::Config::ImageSpace
 {
     struct HDR
@@ -62,29 +63,6 @@ namespace MPL::Config::ImageSpace
             };
             return cpy;
         };
-    };
-
-    struct ColorF
-    {
-        using Patch = RE::ImageSpaceBaseData::Tint::ColorF;
-        std::optional<float> red;
-        std::optional<float> green;
-        std::optional<float> blue;
-        void Apply(Patch* itm)
-        {
-            if (this->red) itm->red = *this->red;
-            if (this->green) itm->green = *this->green;
-            if (this->blue) itm->blue = *this->blue;
-        }
-        static ColorF From(Patch* itm)
-        {
-            ColorF cpy{
-                .red = itm->red,
-                .green = itm->green,
-                .blue = itm->blue,
-            };
-            return cpy;
-        }
     };
 
     struct Tint
@@ -158,7 +136,7 @@ namespace MPL::Config::ImageSpace
 
     struct ImageSpace
     {
-        static constexpr std::string_view Name = "ImageSpace";
+        static constexpr std::string_view Name = "ImageSpaces";
         using Patch = RE::TESImageSpace;
         std::optional<ImageSpaceBaseData> data;
         void Apply(ImageSpace::Patch* itm)

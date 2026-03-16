@@ -16,7 +16,6 @@ extern "C" DLLEXPORT auto SKSEPlugin_Version = []()
     return v;
 }();
 #else
-
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
 {
     a_info->infoVersion = SKSE::PluginInfo::kVersion;
@@ -39,6 +38,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 };
 #endif
 
+/*
 void msg_cb(SKSE::MessagingInterface::Message* msg)
 {
     auto sta = MPL::Config::StatData::GetSingleton();
@@ -51,6 +51,7 @@ void msg_cb(SKSE::MessagingInterface::Message* msg)
         break;
     }
 }
+*/
 
 void Serialize(SKSE::SerializationInterface* ser)
 {
@@ -85,7 +86,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     MPL::Hooks::Install();
-    SKSE::GetMessagingInterface()->RegisterListener(msg_cb);
+    //SKSE::GetMessagingInterface()->RegisterListener(msg_cb);
     SKSE::GetPapyrusInterface()->Register(MPL::Papyrus::Bind);
     auto ser = SKSE::GetSerializationInterface();
     ser->SetUniqueID('CLTL');

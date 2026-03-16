@@ -8,11 +8,9 @@
 #include <REX/REX.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
-#include <rfl/json.hpp>
-#include <rfl.hpp>
 #include <windows.h>
-// clang-format on
 // #define DEBUG
+// clang-format on
 #ifdef SKYRIM_AE
 #    define OFFSET(se, ae) ae
 #    define OFFSET_3(se, ae, vr) ae

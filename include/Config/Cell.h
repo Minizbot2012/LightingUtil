@@ -1,4 +1,5 @@
 #pragma once
+#include <Config/Common.h>
 #include <Config/Templates.h>
 #include <optional>
 namespace MPL::Config::Cell
@@ -70,45 +71,56 @@ namespace MPL::Config::Cell
         static constexpr std::string_view Name = "Cell";
         using Patch = RE::TESObjectCELL;
         std::optional<Flags> flags;
-        std::optional<MPL::Config::Form> skylight;
+        std::optional<MPL::Config::LiteForm> skylight;
         std::optional<MPL::Config::Template::INTERIOR_DATA> lighting;
-        std::optional<MPL::Config::Form> lightTemplate;
-        std::optional<MPL::Config::Form> imagespace;
+        std::optional<MPL::Config::LiteForm> lightTemplate;
+        std::optional<MPL::Config::LiteForm> imagespace;
         void Apply(Patch* itm)
         {
             if (flags) this->flags->Apply(&itm->cellFlags);
             if (this->skylight)
             {
-                RE::ExtraCellSkyRegion* dat = nullptr;
-                if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
+                auto frm = RE::TESForm::LookupByID<RE::TESRegion>(this->skylight->formID);
+                if (frm != nullptr)
                 {
-                    dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
+                    RE::ExtraCellSkyRegion* dat = nullptr;
+
+                    if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
+                    {
+                        dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
+                    }
+                    else
+                    {
+                        dat = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
+                        itm->extraList.Add(dat);
+                    }
+                    dat->skyRegion = frm;
                 }
-                else
-                {
-                    dat = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
-                    itm->extraList.Add(dat);
-                }
-                dat->skyRegion = this->skylight.value()->As<RE::TESRegion>();
             }
             if (this->lighting && itm->IsInteriorCell()) this->lighting->Apply(itm->cellData.interior);
             if (this->lightTemplate)
             {
-                itm->lightingTemplate = this->lightTemplate.value()->As<RE::BGSLightingTemplate>();
+                auto frm = RE::TESForm::LookupByID<RE::BGSLightingTemplate>(this->lightTemplate->formID);
+                if (frm != nullptr)
+                    itm->lightingTemplate = frm;
             }
             if (this->imagespace)
             {
-                RE::ExtraCellImageSpace* dat = nullptr;
-                if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
+                auto frm = RE::TESForm::LookupByID<RE::TESImageSpace>(this->imagespace->formID);
+                if (frm != nullptr)
                 {
-                    dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
+                    RE::ExtraCellImageSpace* dat = nullptr;
+                    if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
+                    {
+                        dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
+                    }
+                    else
+                    {
+                        dat = RE::BSExtraData::Create<RE::ExtraCellImageSpace>();
+                        itm->extraList.Add(dat);
+                    }
+                    dat->imageSpace = frm;
                 }
-                else
-                {
-                    dat = RE::BSExtraData::Create<RE::ExtraCellImageSpace>();
-                    itm->extraList.Add(dat);
-                }
-                dat->imageSpace = this->imagespace.value()->As<RE::TESImageSpace>();
             }
         }
         static Cell From(Patch* itm)
@@ -127,19 +139,19 @@ namespace MPL::Config::Cell
             }
             if (itm->lightingTemplate != NULL)
             {
-                cpy.lightTemplate = Form::FromForm(itm->lightingTemplate);
+                cpy.lightTemplate = MPL::Config::LiteForm::FromID(itm->lightingTemplate->formID);
             }
             if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
                 if (dat->imageSpace != NULL)
-                    cpy.imagespace = Form::FromForm(dat->imageSpace);
+                    cpy.imagespace = MPL::Config::LiteForm::FromID(dat->imageSpace->formID);
             }
             if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
                 if (dat->skyRegion != NULL)
-                    cpy.skylight = Form::FromForm(dat->skyRegion);
+                    cpy.skylight = MPL::Config::LiteForm::FromID(dat->skyRegion->formID);
             }
             return cpy;
         }
