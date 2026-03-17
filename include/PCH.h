@@ -9,7 +9,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <windows.h>
-// #define DEBUG
+#define DEBUG
 // clang-format on
 #ifdef SKYRIM_AE
 #    define OFFSET(se, ae) ae

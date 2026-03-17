@@ -1,6 +1,7 @@
 #pragma once
 #include <Config/Common.h>
 #include <Config/Templates.h>
+#include <RE/T/TESImageSpace.h>
 #include <optional>
 namespace MPL::Config::Cell
 {
@@ -80,7 +81,7 @@ namespace MPL::Config::Cell
             if (flags) this->flags->Apply(&itm->cellFlags);
             if (this->skylight)
             {
-                auto frm = RE::TESForm::LookupByID<RE::TESRegion>(this->skylight->formID);
+                auto frm = this->skylight->Get<RE::TESRegion>();
                 if (frm != nullptr)
                 {
                     RE::ExtraCellSkyRegion* dat = nullptr;
@@ -100,13 +101,13 @@ namespace MPL::Config::Cell
             if (this->lighting && itm->IsInteriorCell()) this->lighting->Apply(itm->cellData.interior);
             if (this->lightTemplate)
             {
-                auto frm = RE::TESForm::LookupByID<RE::BGSLightingTemplate>(this->lightTemplate->formID);
+                auto frm = this->lightTemplate->Get<RE::BGSLightingTemplate>();
                 if (frm != nullptr)
                     itm->lightingTemplate = frm;
             }
             if (this->imagespace)
             {
-                auto frm = RE::TESForm::LookupByID<RE::TESImageSpace>(this->imagespace->formID);
+                auto frm = this->imagespace->Get<RE::TESImageSpace>();
                 if (frm != nullptr)
                 {
                     RE::ExtraCellImageSpace* dat = nullptr;

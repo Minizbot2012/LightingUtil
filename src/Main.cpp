@@ -89,7 +89,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     //SKSE::GetMessagingInterface()->RegisterListener(msg_cb);
     SKSE::GetPapyrusInterface()->Register(MPL::Papyrus::Bind);
     auto ser = SKSE::GetSerializationInterface();
-    ser->SetUniqueID('CLTL');
+    ser->SetUniqueID('LUMA');
     ser->SetSaveCallback(Serialize);
     ser->SetLoadCallback(Deserialize);
     ser->SetRevertCallback(Revert);
