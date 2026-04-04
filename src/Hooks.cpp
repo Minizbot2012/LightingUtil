@@ -14,7 +14,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
-            if (a_ref != NULL && !a_ref->IsDynamicForm())
+            if (a_ref != NULL && a_ref->sourceFiles.array != NULL)
             {
 #ifdef DEBUG
                 logger::info("Loading Cell {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
