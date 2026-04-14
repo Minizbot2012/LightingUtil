@@ -42,7 +42,7 @@ namespace MPL::Config::Template
         void Apply(Patch* itm)
         {
             if (this->x) this->x->Apply(&itm->x);
-            if (this->y) this->z->Apply(&itm->y);
+            if (this->y) this->y->Apply(&itm->y);
             if (this->z) this->z->Apply(&itm->z);
         }
     };
@@ -72,34 +72,37 @@ namespace MPL::Config::Template
             return cpy;
         }
     };
-	struct Inherit {
-	    using Patch = REX::EnumSet<RE::INTERIOR_DATA::Inherit, uint32_t>;
-	    std::optional<bool> AmbientColor;
-		std::optional<bool> DirectionalColor;
-		std::optional<bool> FogColor;
-		std::optional<bool> FogNear;
-		std::optional<bool> FogFar;
-		std::optional<bool> DirectionalRotation;
-		std::optional<bool> DirectionalFade;
-		std::optional<bool> ClipDistance;
-		std::optional<bool> FogPower;
-		std::optional<bool> FogMax;
-		std::optional<bool> LightFadeDistance;
-		void Apply(Patch* itm) {
-		    if(AmbientColor) itm->set(*AmbientColor, RE::INTERIOR_DATA::Inherit::kAmbientColor);
-			if(DirectionalColor) itm->set(*DirectionalColor, RE::INTERIOR_DATA::Inherit::kDirectionalColor);
-			if(FogColor) itm->set(*FogColor, RE::INTERIOR_DATA::Inherit::kFogColor);
-			if(FogNear) itm->set(*FogNear, RE::INTERIOR_DATA::Inherit::kFogNear);
-			if(FogFar) itm->set(*FogFar, RE::INTERIOR_DATA::Inherit::kFogFar);
-			if(DirectionalRotation) itm->set(*DirectionalRotation, RE::INTERIOR_DATA::Inherit::kDirectionalRotation);
-			if(DirectionalFade) itm->set(*DirectionalFade, RE::INTERIOR_DATA::Inherit::kDirectionalFade);
-			if(ClipDistance) itm->set(*ClipDistance, RE::INTERIOR_DATA::Inherit::kClipDistance);
-			if(FogPower) itm->set(*FogPower, RE::INTERIOR_DATA::Inherit::kFogPower);
-			if(FogMax) itm->set(*FogMax, RE::INTERIOR_DATA::Inherit::kFogMax);
-			if(LightFadeDistance) itm->set(*LightFadeDistance, RE::INTERIOR_DATA::Inherit::kLightFadeDistances);
-		}
-		static Inherit From(Patch* itm) {
-            Inherit cpy {
+    struct Inherit
+    {
+        using Patch = REX::EnumSet<RE::INTERIOR_DATA::Inherit, uint32_t>;
+        std::optional<bool> AmbientColor;
+        std::optional<bool> DirectionalColor;
+        std::optional<bool> FogColor;
+        std::optional<bool> FogNear;
+        std::optional<bool> FogFar;
+        std::optional<bool> DirectionalRotation;
+        std::optional<bool> DirectionalFade;
+        std::optional<bool> ClipDistance;
+        std::optional<bool> FogPower;
+        std::optional<bool> FogMax;
+        std::optional<bool> LightFadeDistance;
+        void Apply(Patch* itm)
+        {
+            if (AmbientColor) itm->set(*AmbientColor, RE::INTERIOR_DATA::Inherit::kAmbientColor);
+            if (DirectionalColor) itm->set(*DirectionalColor, RE::INTERIOR_DATA::Inherit::kDirectionalColor);
+            if (FogColor) itm->set(*FogColor, RE::INTERIOR_DATA::Inherit::kFogColor);
+            if (FogNear) itm->set(*FogNear, RE::INTERIOR_DATA::Inherit::kFogNear);
+            if (FogFar) itm->set(*FogFar, RE::INTERIOR_DATA::Inherit::kFogFar);
+            if (DirectionalRotation) itm->set(*DirectionalRotation, RE::INTERIOR_DATA::Inherit::kDirectionalRotation);
+            if (DirectionalFade) itm->set(*DirectionalFade, RE::INTERIOR_DATA::Inherit::kDirectionalFade);
+            if (ClipDistance) itm->set(*ClipDistance, RE::INTERIOR_DATA::Inherit::kClipDistance);
+            if (FogPower) itm->set(*FogPower, RE::INTERIOR_DATA::Inherit::kFogPower);
+            if (FogMax) itm->set(*FogMax, RE::INTERIOR_DATA::Inherit::kFogMax);
+            if (LightFadeDistance) itm->set(*LightFadeDistance, RE::INTERIOR_DATA::Inherit::kLightFadeDistances);
+        }
+        static Inherit From(Patch* itm)
+        {
+            Inherit cpy{
                 .AmbientColor = (*itm & RE::INTERIOR_DATA::Inherit::kAmbientColor).underlying() != 0,
                 .DirectionalColor = (*itm & RE::INTERIOR_DATA::Inherit::kDirectionalColor).underlying() != 0,
                 .FogColor = (*itm & RE::INTERIOR_DATA::Inherit::kFogColor).underlying() != 0,
@@ -113,8 +116,8 @@ namespace MPL::Config::Template
                 .LightFadeDistance = (*itm & RE::INTERIOR_DATA::Inherit::kLightFadeDistances).underlying() != 0,
             };
             return cpy;
-		}
-	};
+        }
+    };
     struct INTERIOR_DATA
     {
         using Patch = RE::INTERIOR_DATA;
@@ -151,7 +154,7 @@ namespace MPL::Config::Template
             if (this->directionalZ) itm->directionalZ = *this->directionalZ;
             if (this->lightFadeStart) itm->lightFadeStart = *this->lightFadeStart;
             if (this->lightFadeEnd) itm->lightFadeEnd = *this->lightFadeEnd;
-            if(this->inherit) this->inherit->Apply(&itm->lightingTemplateInheritanceFlags);
+            if (this->inherit) this->inherit->Apply(&itm->lightingTemplateInheritanceFlags);
         }
         static INTERIOR_DATA From(Patch* itm)
         {
@@ -202,13 +205,6 @@ namespace MPL::Config::Template
             cpy.data->fogColorFar->alpha = {};
             cpy.data->fogColorNear->alpha = {};
             cpy.data->directional->alpha = {};
-            cpy.data->directionalAmbientLightingColors->directional->x->max->alpha = {};
-            cpy.data->directionalAmbientLightingColors->directional->y->max->alpha = {};
-            cpy.data->directionalAmbientLightingColors->directional->z->max->alpha = {};
-            cpy.data->directionalAmbientLightingColors->directional->x->min->alpha = {};
-            cpy.data->directionalAmbientLightingColors->directional->y->min->alpha = {};
-            cpy.data->directionalAmbientLightingColors->directional->z->min->alpha = {};
-            cpy.data->directionalAmbientLightingColors->specular->alpha = {};
             cpy.directionalAmbientLightingColors->specular->alpha = {};
             cpy.directionalAmbientLightingColors->directional->x->max->alpha = {};
             cpy.directionalAmbientLightingColors->directional->y->max->alpha = {};
@@ -219,4 +215,4 @@ namespace MPL::Config::Template
             return cpy;
         }
     };
-}  // namespace MPL::Config
+}  // namespace MPL::Config::Template

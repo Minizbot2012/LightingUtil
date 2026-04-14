@@ -18,7 +18,6 @@ namespace MPL::Config::Cell
         std::optional<bool> ShowSky;
         std::optional<bool> UsesSkyLighting;
         std::optional<bool> WarnToLeave;
-        std::optional<bool> Unknown9;
         std::optional<bool> Unknown10;
         std::optional<bool> Unknown11;
         std::optional<bool> Unknown12;
@@ -138,20 +137,20 @@ namespace MPL::Config::Cell
                 cpy.lighting->fogColorNear->alpha = {};
                 cpy.lighting->directional->alpha = {};
             }
-            if (itm->lightingTemplate != NULL)
+            if (itm->lightingTemplate != nullptr)
             {
                 cpy.lightTemplate = MPL::Config::LiteForm::FromID(itm->lightingTemplate->formID);
             }
             if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
-                if (dat->imageSpace != NULL)
+                if (dat->imageSpace != nullptr)
                     cpy.imagespace = MPL::Config::LiteForm::FromID(dat->imageSpace->formID);
             }
             if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
-                if (dat->skyRegion != NULL)
+                if (dat->skyRegion != nullptr)
                     cpy.skylight = MPL::Config::LiteForm::FromID(dat->skyRegion->formID);
             }
             return cpy;

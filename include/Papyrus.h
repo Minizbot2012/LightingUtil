@@ -16,39 +16,55 @@ namespace MPL::Papyrus
                     return clib_util::editorID::get_editorID(dat->skyRegion);
                 }
             }
+            if (cl->IsExteriorCell())
+            {
+                auto sta = MPL::Config::StatData::GetSingleton();
+                auto sky = RE::Sky::GetSingleton();
+                if (sky && sky->region)
+                {
+                    sta->lastRegion = sky->region;
+                    return clib_util::editorID::get_editorID(sky->region);
+                }
+                else
+                {
+                    return clib_util::editorID::get_editorID(sta->lastRegion);
+                }
+            }
         }
         return "";
     }
 
     inline void ChangeRegion(RE::StaticFunctionTag*, RE::TESObjectCELL* cl, std::string region)
     {
-        if (cl != nullptr)
+        if (cl != nullptr && !region.empty())
         {
             if (cl->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
                 auto dat = cl->extraList.GetByType<RE::ExtraCellSkyRegion>();
-                dat->skyRegion = RE::TESForm::LookupByEditorID<RE::TESRegion>(region);
-                if (dat->skyRegion != nullptr)
+                auto skr = RE::TESForm::LookupByEditorID<RE::TESRegion>(region);
+                if (skr != nullptr)
                 {
+                    dat->skyRegion = skr;
                     logger::info("{:X}:{}", dat->skyRegion->GetLocalFormID(), dat->skyRegion->sourceFiles.array->front()->GetFilename());
                 }
                 else
                 {
-                    logger::warn("Sky region for {} IS NULL", region);
+                    logger::warn("Sky region for {} IS nullptr", region);
                 }
             }
             else
             {
-                auto dat = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
-                dat->skyRegion = RE::TESForm::LookupByEditorID<RE::TESRegion>(region);
-                if (dat->skyRegion != nullptr)
+                auto skr = RE::TESForm::LookupByEditorID<RE::TESRegion>(region);
+                if (skr != nullptr)
                 {
+                    auto dat = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
+                    dat->skyRegion = skr;
                     logger::info("Adding sky region {:X}:{}", dat->skyRegion->GetLocalFormID(), dat->skyRegion->sourceFiles.array->front()->GetFilename());
                     cl->extraList.Add(dat);
                 }
                 else
                 {
-                    logger::warn("Sky region for {} IS NULL", region);
+                    logger::warn("Sky region for {} IS nullptr", region);
                 }
             }
         }

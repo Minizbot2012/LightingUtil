@@ -10,8 +10,11 @@ namespace MPL::Config
     struct LiteForm
     {
         RE::FormID formID;
-        template<class T>
-        T* Get() { return RE::TESForm::LookupByID<T>(formID); };
+        template <class T>
+        T* Get() const
+        {
+            return RE::TESForm::LookupByID<T>(formID);
+        };
         static LiteForm FromID(RE::FormID id) { return { .formID = id }; };
     };
 
@@ -29,7 +32,7 @@ namespace MPL::Config
     {
     public:
         SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
-        //void PostProcess();
+        RE::TESRegion* lastRegion;
     };
 
     template <typename T>
@@ -99,6 +102,19 @@ namespace rfl
     struct Reflector<MPL::Config::LiteForm>
     {
         using ReflType = std::string;
+        static ReflType from(MPL::Config::LiteForm& v)
+        {
+            if (v.formID == 0x0)
+            {
+                return "null";
+            }
+            auto form = v.Get<RE::TESForm>();
+            if (form->sourceFiles.array != nullptr)
+            {
+                return "null";
+            }
+            return format("{:06X}:{}", form->GetLocalFormID(), form->GetFile(0)->GetFilename());
+        }
         static MPL::Config::LiteForm to(const ReflType& v)
         {
             if (v == "null")

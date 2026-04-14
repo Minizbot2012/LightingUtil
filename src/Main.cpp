@@ -1,7 +1,7 @@
 #include <Config.h>
 #include <Hooks.h>
-#include <Plugin.h>
 #include <Papyrus.h>
+#include <Plugin.h>
 #include <REL/Version.h>
 
 #ifdef SKYRIM_AE

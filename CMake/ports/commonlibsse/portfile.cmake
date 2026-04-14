@@ -2,7 +2,7 @@ vcpkg_from_git(
   OUT_SOURCE_PATH SOURCE_PATH
   URL https://github.com/powerof3/CommonLibSSE
   HEAD_REF dev
-  REF 4113669149698641d8b52b63c382010d44f70ee0
+  REF aad6fb7dc9cd39754a28742b3b709ae29dd20843
 )
 
 set(VCPKG_POLICY_EMPTY_PACKAGE enabled)
@@ -13,13 +13,13 @@ vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
 )
 
 if(SKYRIM_AE)
-    vcpkg_configure_cmake(
+  vcpkg_configure_cmake(
                 SOURCE_PATH "${SOURCE_PATH}"
                 PREFER_NINJA
                 OPTIONS -DSKSE_SUPPORT_XBYAK=on -DSKYRIM_SUPPORT_AE=on
         )
 else()
-    vcpkg_configure_cmake(
+  vcpkg_configure_cmake(
                 SOURCE_PATH "${SOURCE_PATH}"
                 PREFER_NINJA
                 OPTIONS -DSKSE_SUPPORT_XBYAK=on -DSKYRIM_SUPPORT_AE=off

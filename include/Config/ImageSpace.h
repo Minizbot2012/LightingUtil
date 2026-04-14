@@ -19,6 +19,7 @@ namespace MPL::Config::ImageSpace
             if (this->eyeAdaptSpeed) itm->eyeAdaptSpeed = *this->eyeAdaptSpeed;
             if (this->bloomBlurRadius) itm->bloomBlurRadius = *this->bloomBlurRadius;
             if (this->bloomThreshold) itm->bloomThreshold = *this->bloomThreshold;
+            if (this->bloomScale) itm->bloomScale = *this->bloomScale;
             if (this->receiveBloomThreshold) itm->receiveBloomThreshold = *this->receiveBloomThreshold;
             if (this->white) itm->white = *this->white;
             if (this->sunlightScale) itm->sunlightScale = *this->sunlightScale;

@@ -14,7 +14,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
-            if (a_ref != NULL && a_ref->sourceFiles.array != NULL)
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
             {
 #ifdef DEBUG
                 logger::info("Loading Cell {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
@@ -32,10 +32,13 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
+            {
 #ifdef DEBUG
-            logger::info("Loading IS {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
+                logger::info("Loading IS {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
-            MPL::Config::LoadConfigFormID<MPL::Config::ImageSpace::ImageSpace>(a_ref);
+                MPL::Config::LoadConfigFormID<MPL::Config::ImageSpace::ImageSpace>(a_ref);
+            }
         }
         static inline REL::Relocation<decltype(thunk)> func;
         static inline constexpr std::size_t index{ 0x13 };
@@ -47,10 +50,13 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
+            {
 #ifdef DEBUG
-            logger::info("Loading TMPL {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
+                logger::info("Loading TMPL {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
-            MPL::Config::LoadConfigFormID<MPL::Config::Template::LightingTemplate>(a_ref);
+                MPL::Config::LoadConfigFormID<MPL::Config::Template::LightingTemplate>(a_ref);
+            }
         }
         static inline REL::Relocation<decltype(thunk)> func;
         static inline constexpr std::size_t index{ 0x13 };
@@ -62,7 +68,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref, RE::TESObjectCELL* cl)
         {
             func(a_ref, cl);
-            if (cl != nullptr)
+            if (cl != nullptr && a_ref->sourceFiles.array != nullptr)
             {
 #ifdef DEBUG
                 logger::info("Player changed cell to {:06X}:{}", cl->GetLocalFormID(), cl->GetFile(0)->GetFilename());
