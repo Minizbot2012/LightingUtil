@@ -4,8 +4,6 @@
 #include <Config/Templates.h>
 #include <Hooking.h>
 #include <Hooks.h>
-#include <RE/B/BGSLightingTemplate.h>
-#include <RE/T/TESImageSpace.h>
 namespace MPL::Hooks
 {
     struct LoadCELL
@@ -68,7 +66,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref, RE::TESObjectCELL* cl)
         {
             func(a_ref, cl);
-            if (cl != nullptr && a_ref->sourceFiles.array != nullptr)
+            if (cl != nullptr && cl->sourceFiles.array != nullptr)
             {
 #ifdef DEBUG
                 logger::info("Player changed cell to {:06X}:{}", cl->GetLocalFormID(), cl->GetFile(0)->GetFilename());

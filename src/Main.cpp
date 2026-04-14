@@ -38,21 +38,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 };
 #endif
 
-/*
-void msg_cb(SKSE::MessagingInterface::Message* msg)
-{
-    auto sta = MPL::Config::StatData::GetSingleton();
-    switch (msg->type)
-    {
-    case SKSE::MessagingInterface::kDataLoaded:
-        sta->PostProcess();
-        break;
-    default:
-        break;
-    }
-}
-*/
-
 void Serialize(SKSE::SerializationInterface* ser)
 {
     MPL::Config::StatData::GetSingleton()->cellLoad.Save(ser, 'CLCH', 0x1);
@@ -86,7 +71,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     SKSE::Init(a_skse);
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     MPL::Hooks::Install();
-    //SKSE::GetMessagingInterface()->RegisterListener(msg_cb);
     SKSE::GetPapyrusInterface()->Register(MPL::Papyrus::Bind);
     auto ser = SKSE::GetSerializationInterface();
     ser->SetUniqueID('LUMA');
