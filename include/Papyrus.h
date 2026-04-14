@@ -25,7 +25,7 @@ namespace MPL::Papyrus
                     sta->lastRegion = sky->region;
                     return clib_util::editorID::get_editorID(sky->region);
                 }
-                else
+                else if (sta->lastRegion)
                 {
                     return clib_util::editorID::get_editorID(sta->lastRegion);
                 }
