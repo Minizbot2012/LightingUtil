@@ -1,6 +1,5 @@
 #pragma once
 #include <ClibUtil/editorID.hpp>
-#include <filesystem>
 #include <format>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -68,31 +67,31 @@ namespace MPL::Config
                 }
             }
         }
-        auto luma_path = std::format("./Data/SKSE/Luma/{}", T::Name);
-        if (std::filesystem::exists(luma_path))
-        {
-            for (auto dir : std::filesystem::directory_iterator(luma_path))
-            {
-                if (std::filesystem::is_directory(dir))
-                {
-                    auto file_name = dir.path() / std::format("{}/{:06X}.json", form->GetFile(0)->GetFilename(), form->GetLocalFormID());
-                    if (std::filesystem::exists(file_name))
-                    {
-                        logger::info("Loading file {}", file_name.string());
-                        auto pch = rfl::json::load<T>(file_name.string());
-                        if (pch.has_value())
-                        {
-                            logger::info("Applying file {}", file_name.string());
-                            pch->Apply(form);
-                        }
-                        else
-                        {
-                            logger::info("Error {} {}", file_name.string(), pch.error().what());
-                        }
-                    }
-                }
-            }
-        }
+        // auto luma_path = std::format("./Data/SKSE/Luma/{}", T::Name);
+        // if (std::filesystem::exists(luma_path))
+        // {
+        //     for (auto dir : std::filesystem::directory_iterator(luma_path))
+        //     {
+        //         if (std::filesystem::is_directory(dir))
+        //         {
+        //             auto file_name = dir.path() / std::format("{}/{:06X}.json", form->GetFile(0)->GetFilename(), form->GetLocalFormID());
+        //             if (std::filesystem::exists(file_name))
+        //             {
+        //                 logger::info("Loading file {}", file_name.string());
+        //                 auto pch = rfl::json::load<T>(file_name.string());
+        //                 if (pch.has_value())
+        //                 {
+        //                     logger::info("Applying file {}", file_name.string());
+        //                     pch->Apply(form);
+        //                 }
+        //                 else
+        //                 {
+        //                     logger::info("Error {} {}", file_name.string(), pch.error().what());
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 }  // namespace MPL::Config
 
