@@ -1,9 +1,11 @@
 #pragma once
 #include <ClibUtil/editorID.hpp>
 #include <cstring>
+#include <filesystem>
 #include <format>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <rfl/json/save.hpp>
 #include <string_view>
 namespace MPL::Config
 {
@@ -34,7 +36,7 @@ namespace MPL::Config
         SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
     };
-
+    static bool lumaDump = std::filesystem::exists(".lumadump");
     template <typename T>
         requires Named<T> && Patch<T>
     void LoadConfigFormID(typename T::Patch* form)
@@ -68,6 +70,14 @@ namespace MPL::Config
                 }
             }
         }
+        if(lumaDump) {
+            T data = T::From(form);
+            std::filesystem::path path(std::format("Luma/{}/{}", T::Name, form->GetFile(0)->GetFilename()));
+            if(!std::filesystem::exists(path)) {
+                std::filesystem::create_directories(path);
+            }
+            rfl::json::save(std::format("Luma/{}/{}/{:06X}.json", T::Name, form->GetFile(0)->GetFilename(), form->GetLocalFormID()), data, 0);
+        }
     }
 }  // namespace MPL::Config
 
@@ -77,7 +87,7 @@ namespace rfl
     struct Reflector<MPL::Config::LiteForm>
     {
         using ReflType = std::string;
-        static ReflType from(MPL::Config::LiteForm& v)
+        static ReflType from(const MPL::Config::LiteForm& v)
         {
             if (v.formID == 0x0)
             {
@@ -88,7 +98,8 @@ namespace rfl
             {
                 return "null";
             }
-            if(auto edid = form->GetFormEditorID(); strcmp(edid, "") != 0) {
+            if (auto edid = form->GetFormEditorID(); strcmp(edid, "") != 0)
+            {
                 return std::string(form->GetFormEditorID());
             }
             return format("{:06X}:{}", form->GetLocalFormID(), form->GetFile(0)->GetFilename());
