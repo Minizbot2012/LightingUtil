@@ -4,7 +4,6 @@ namespace MPL::Config::ImageSpace
 {
     struct HDR
     {
-        using Patch = RE::ImageSpaceBaseData::HDR;
         std::optional<float> eyeAdaptSpeed;
         std::optional<float> bloomBlurRadius;
         std::optional<float> bloomThreshold;
@@ -14,6 +13,7 @@ namespace MPL::Config::ImageSpace
         std::optional<float> sunlightScale;
         std::optional<float> skyScale;
         std::optional<float> eyeAdaptStrength;
+        using Patch = RE::ImageSpaceBaseData::HDR;
         void Apply(Patch* itm)
         {
             if (this->eyeAdaptSpeed) itm->eyeAdaptSpeed = *this->eyeAdaptSpeed;
@@ -45,16 +45,16 @@ namespace MPL::Config::ImageSpace
 
     struct Cinematic
     {
-        using Patch = RE::ImageSpaceBaseData::Cinematic;
         std::optional<float> saturation;
         std::optional<float> brightness;
         std::optional<float> contrast;
+        using Patch = RE::ImageSpaceBaseData::Cinematic;
         void Apply(Patch* itm)
         {
             if (this->saturation) itm->saturation = *this->saturation;
             if (this->brightness) itm->brightness = *this->brightness;
             if (this->contrast) itm->contrast = *this->contrast;
-        };
+        }
         static Cinematic From(Patch* itm)
         {
             Cinematic cpy{
@@ -63,14 +63,14 @@ namespace MPL::Config::ImageSpace
                 .contrast = itm->contrast,
             };
             return cpy;
-        };
+        }
     };
 
     struct Tint
     {
-        using Patch = RE::ImageSpaceBaseData::Tint;
         std::optional<float> amount;
         std::optional<ColorF> color;
+        using Patch = RE::ImageSpaceBaseData::Tint;
         void Apply(Patch* itm)
         {
             if (this->amount) itm->amount = *this->amount;
@@ -88,10 +88,10 @@ namespace MPL::Config::ImageSpace
 
     struct DepthOfField
     {
-        using Patch = RE::ImageSpaceBaseData::DepthOfField;
         std::optional<float> strength;
         std::optional<float> distance;
         std::optional<float> range;
+        using Patch = RE::ImageSpaceBaseData::DepthOfField;
         void Apply(Patch* itm)
         {
             if (this->strength) itm->strength = *this->strength;
@@ -111,11 +111,11 @@ namespace MPL::Config::ImageSpace
 
     struct ImageSpaceBaseData
     {
-        using Patch = RE::ImageSpaceBaseData;
         std::optional<HDR> hdr;
         std::optional<Cinematic> cinematic;
         std::optional<Tint> tint;
         std::optional<DepthOfField> depthOfField;
+        using Patch = RE::ImageSpaceBaseData;
         void Apply(Patch* itm)
         {
             if (this->hdr) this->hdr->Apply(&itm->hdr);
@@ -135,22 +135,21 @@ namespace MPL::Config::ImageSpace
         }
     };
 
-    struct ImageSpace
+    struct TESImageSpace
     {
         static constexpr std::string_view Name = "ImageSpaces";
-        using Patch = RE::TESImageSpace;
         std::optional<ImageSpaceBaseData> data;
-        void Apply(ImageSpace::Patch* itm)
+        using Patch = RE::TESImageSpace;
+        void Apply(TESImageSpace::Patch* itm)
         {
             if (this->data) this->data->Apply(&itm->data);
         }
-        static ImageSpace From(ImageSpace::Patch* itm)
+        static TESImageSpace From(TESImageSpace::Patch* itm)
         {
-            ImageSpace cpy{
+            TESImageSpace cpy{
                 .data = ImageSpaceBaseData::From(&itm->data)
             };
             return cpy;
         }
     };
-
 }  // namespace MPL::Config::ImageSpace

@@ -1,27 +1,17 @@
 #pragma once
-#include <ClibUtil/editorID.hpp>
-#include <cstring>
+#include <Config/Cell.h>
+#include <Config/Common.h>
+#include <Config/ImageSpace.h>
+#include <Config/ObjectRef.h>
+#include <Config/Templates.h>
 #include <filesystem>
 #include <format>
-#include <ranges>
-#include <rfl.hpp>
 #include <rfl/json.hpp>
-#include <rfl/json/save.hpp>
-#include <string>
 #include <string_view>
+#include <vector>
+#include <ClibUtil/editorID.hpp>
 namespace MPL::Config
 {
-    struct LiteForm
-    {
-        RE::FormID formID;
-        template <class T>
-        T* Get() const
-        {
-            return formID != 0x0 ? RE::TESForm::LookupByID<T>(formID) : nullptr;
-        };
-        static LiteForm FromID(RE::FormID id) { return { .formID = id }; };
-    };
-
     template <typename T>
     concept Named = requires(T t) {
         { T::Name } -> std::same_as<const std::string_view&>;
@@ -32,6 +22,7 @@ namespace MPL::Config
         { T::From(static_cast<typename T::Patch*>(nullptr)) } -> std::same_as<T>;
         t.Apply(static_cast<typename T::Patch*>(nullptr));
     };
+
     class StatData : public REX::Singleton<StatData>
     {
     public:
@@ -43,12 +34,15 @@ namespace MPL::Config
     void LoadConfigFormID(typename T::Patch* form)
     {
         static std::vector<std::string> valid_files = RE::TESDataHandler::GetSingleton()->files |
-                                                      std::views::filter([](RE::TESFile* file)
-                                                          { std::string sum(file->summary.c_str());
-                                            return sum.contains("[Luma]"); }) |
-                                                      std::views::transform([](RE::TESFile* file)
-                                                          { return std::string(file->GetFilename()); }) |
-                                                      std::ranges::to<std::vector>();
+                                              std::views::filter([](RE::TESFile* file)
+                                                  {
+            std::string sum(file->summary.c_str());
+            return sum.contains("[Luma]"); }) |
+                                              std::views::transform([](RE::TESFile* file)
+                                                  {
+                                                      return std::string(file->GetFilename());
+                                                   }) |
+                                              std::ranges::to<std::vector>();
         for (auto local_file : valid_files)
         {
             auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, local_file, form->GetFile(0)->GetFilename(), form->GetLocalFormID());
@@ -57,7 +51,9 @@ namespace MPL::Config
             {
                 if (fileStream.stream->totalSize > 0)
                 {
+    #    ifndef NDEBUG
                     logger::info("Loading file {}", file_name);
+    #    endif
                     std::string contents;
                     contents.resize(fileStream.stream->totalSize);
                     fileStream.read(contents.data(), fileStream.stream->totalSize);
@@ -86,56 +82,3 @@ namespace MPL::Config
         }
     }
 }  // namespace MPL::Config
-
-namespace rfl
-{
-    template <>
-    struct Reflector<MPL::Config::LiteForm>
-    {
-        using ReflType = std::string;
-        static ReflType from(const MPL::Config::LiteForm& v)
-        {
-            if (v.formID == 0x0)
-            {
-                return "null";
-            }
-            auto form = v.Get<RE::TESForm>();
-            if (form->sourceFiles.array != nullptr)
-            {
-                return "null";
-            }
-            if (auto edid = form->GetFormEditorID(); strcmp(edid, "") != 0)
-            {
-                return std::string(form->GetFormEditorID());
-            }
-            return format("{:06X}:{}", form->GetLocalFormID(), form->GetFile(0)->GetFilename());
-        }
-        static MPL::Config::LiteForm to(const ReflType& v)
-        {
-            if (v == "null")
-            {
-                return MPL::Config::LiteForm::FromID(0x0);
-            }
-            auto loc = v.find(":");
-            if (loc != std::string::npos)
-            {
-                auto lfid = strtoul(v.substr(0, loc).c_str(), nullptr, 16);
-                auto file = v.substr(loc + 1);
-                auto* dh = RE::TESDataHandler::GetSingleton();
-                return MPL::Config::LiteForm::FromID(dh->LookupFormID(lfid, file));
-            }
-            else
-            {
-                auto* frm = RE::TESForm::LookupByEditorID(v);
-                if (frm)
-                {
-                    return MPL::Config::LiteForm::FromID(frm->formID);
-                }
-                else
-                {
-                    return MPL::Config::LiteForm::FromID(0x0);
-                }
-            }
-        }
-    };
-}  // namespace rfl

@@ -1,10 +1,5 @@
-#include <Config.h>
-#include <Config/Cell.h>
-#include <Config/ImageSpace.h>
-#include <Config/ObjectRef.h>
-#include <Config/Templates.h>
-#include <Hooking.h>
 #include <Hooks.h>
+#include <Config.h>
 namespace MPL::Hooks
 {
     struct LoadCELL
@@ -15,10 +10,10 @@ namespace MPL::Hooks
             func(a_ref);
             if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
             {
-#ifdef DEBUG
+#ifndef NDEBUG
                 logger::info("Loading Cell {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
-                MPL::Config::LoadConfigFormID<MPL::Config::Cell::Cell>(a_ref);
+                MPL::Config::LoadConfigFormID<MPL::Config::Cell::TESObjectCELL>(a_ref);
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -33,10 +28,10 @@ namespace MPL::Hooks
             func(a_ref);
             if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
             {
-#ifdef DEBUG
+#ifndef NDEBUG
                 logger::info("Loading IS {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
-                MPL::Config::LoadConfigFormID<MPL::Config::ImageSpace::ImageSpace>(a_ref);
+                MPL::Config::LoadConfigFormID<MPL::Config::ImageSpace::TESImageSpace>(a_ref);
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -51,7 +46,7 @@ namespace MPL::Hooks
             func(a_ref);
             if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && Config::TESObjectREFR::IsValid(a_ref))
             {
-#ifdef DEBUG
+#ifndef NDEBUG
                 logger::info("Loading ObjRef {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
                 MPL::Config::LoadConfigFormID<MPL::Config::TESObjectREFR>(a_ref);
@@ -69,10 +64,10 @@ namespace MPL::Hooks
             func(a_ref);
             if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
             {
-#ifdef DEBUG
+#ifndef NDEBUG
                 logger::info("Loading TMPL {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
-                MPL::Config::LoadConfigFormID<MPL::Config::Template::LightingTemplate>(a_ref);
+                MPL::Config::LoadConfigFormID<MPL::Config::Template::BGSLightingTemplate>(a_ref);
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -87,7 +82,7 @@ namespace MPL::Hooks
             func(a_ref, cl);
             if (cl != nullptr && cl->sourceFiles.array != nullptr)
             {
-#ifdef DEBUG
+#ifndef NDEBUG
                 logger::info("Player changed cell to {:06X}:{}", cl->GetLocalFormID(), cl->GetFile(0)->GetFilename());
 #endif
                 auto* sta = MPL::Config::StatData::GetSingleton();

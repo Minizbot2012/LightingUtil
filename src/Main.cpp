@@ -3,6 +3,9 @@
 #include <Papyrus.h>
 #include <Plugin.h>
 #include <REL/Version.h>
+#include <SKSE/API.h>
+#include <SKSE/Impl/Stubs.h>
+#include <SKSE/Interfaces.h>
 
 #ifdef SKYRIM_AE
 extern "C" DLLEXPORT auto SKSEPlugin_Version = []()

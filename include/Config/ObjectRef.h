@@ -1,14 +1,14 @@
 #pragma once
-#include <Config.h>
+#include <Config/Common.h>
 #include <optional>
 namespace MPL::Config
 {
     struct ExtraRoomRefData
     {
-        using Patch = RE::ExtraRoomRefData;
-        using TopLevel = RE::TESObjectREFR;
         std::optional<MPL::Config::LiteForm> imageSpace;
         std::optional<MPL::Config::LiteForm> lightingTemplate;
+        using TopLevel = RE::TESObjectREFR;
+        using Patch = RE::ExtraRoomRefData;
         void Apply(Patch* itm)
         {
             if (this->imageSpace) itm->data->imageSpace = this->imageSpace->Get<RE::TESImageSpace>();
@@ -21,7 +21,8 @@ namespace MPL::Config
             if (itm->data->lightingTemplate) cpy.lightingTemplate = MPL::Config::LiteForm::FromID(cpy.imageSpace->formID);
             return cpy;
         }
-        static bool IsValid(TopLevel* itm) {
+        static bool IsValid(TopLevel* itm)
+        {
             return itm->data.objectReference->formID = 0x15;
         }
     };
@@ -29,9 +30,9 @@ namespace MPL::Config
     // This is initially for setting up RoomBounds / Templates
     struct TESObjectREFR
     {
-        using Patch = RE::TESObjectREFR;
         static constexpr std::string_view Name = "ObjectReference";
         std::optional<ExtraRoomRefData> roomBound;
+        using Patch = RE::TESObjectREFR;
         void Apply(Patch* itm)
         {
             if (ExtraRoomRefData::IsValid(itm))
@@ -58,7 +59,8 @@ namespace MPL::Config
             }
             return cpy;
         }
-        static bool IsValid(Patch* itm) {
+        static bool IsValid(Patch* itm)
+        {
             return itm->data.objectReference != nullptr && (ExtraRoomRefData::IsValid(itm));
         }
     };

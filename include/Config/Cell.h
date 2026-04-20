@@ -1,13 +1,11 @@
 #pragma once
 #include <Config/Common.h>
 #include <Config/Templates.h>
-#include <RE/T/TESImageSpace.h>
 #include <optional>
 namespace MPL::Config::Cell
 {
     struct Flags
     {
-        using Patch = REX::EnumSet<RE::TESObjectCELL::Flag, uint16_t>;
         std::optional<bool> IsInteriorCell;
         std::optional<bool> HasWater;
         std::optional<bool> CanTravelFromHere;
@@ -24,6 +22,7 @@ namespace MPL::Config::Cell
         std::optional<bool> Unknown13;
         std::optional<bool> Unknown14;
         std::optional<bool> SunlightShadows;
+        using Patch = REX::EnumSet<RE::TESObjectCELL::Flag, uint16_t>;
         void Apply(Patch* itm)
         {
             if (IsInteriorCell) itm->set(*this->IsInteriorCell, RE::TESObjectCELL::Flag::kIsInteriorCell);
@@ -64,17 +63,17 @@ namespace MPL::Config::Cell
                 .SunlightShadows = (itm->underlying() & 1 << 15) != 0,
             };
             return cpy;
-        };
+        }
     };
-    struct Cell
+    struct TESObjectCELL
     {
         static constexpr std::string_view Name = "Cell";
-        using Patch = RE::TESObjectCELL;
         std::optional<Flags> flags;
         std::optional<MPL::Config::LiteForm> skylight;
         std::optional<MPL::Config::Template::INTERIOR_DATA> lighting;
         std::optional<MPL::Config::LiteForm> lightTemplate;
         std::optional<MPL::Config::LiteForm> imagespace;
+        using Patch = RE::TESObjectCELL;
         void Apply(Patch* itm)
         {
             if (flags) this->flags->Apply(&itm->cellFlags);
@@ -123,9 +122,9 @@ namespace MPL::Config::Cell
                 }
             }
         }
-        static Cell From(Patch* itm)
+        static TESObjectCELL From(Patch* itm)
         {
-            Cell cpy{
+            TESObjectCELL cpy{
                 .flags = Flags::From(&itm->cellFlags),
                 .skylight = std::nullopt,
             };

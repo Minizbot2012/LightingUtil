@@ -9,10 +9,6 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <windows.h>
-// TODO: When release happens enable proper debugging builds by uncommenting this guard.
-// #ifndef NDEBUG
-#define DEBUG
-// #endif
 // clang-format on
 #ifdef SKYRIM_AE
 #    define OFFSET(se, ae) ae

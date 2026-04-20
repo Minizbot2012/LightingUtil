@@ -6,9 +6,9 @@ namespace MPL::Config::Template
 
     struct MinMaxColor
     {
-        using Patch = RE::BGSDirectionalAmbientLightingColors::Directional::MaxMin<RE::Color>;
         std::optional<Color> max;
         std::optional<Color> min;
+        using Patch = RE::BGSDirectionalAmbientLightingColors::Directional::MaxMin<RE::Color>;
         static MinMaxColor From(Patch* itm)
         {
             MinMaxColor cpy{
@@ -26,10 +26,10 @@ namespace MPL::Config::Template
 
     struct Directional
     {
-        using Patch = RE::BGSDirectionalAmbientLightingColors::Directional;
         std::optional<MinMaxColor> x;
         std::optional<MinMaxColor> y;
         std::optional<MinMaxColor> z;
+        using Patch = RE::BGSDirectionalAmbientLightingColors::Directional;
         static Directional From(Patch* itm)
         {
             Directional cpy{
@@ -49,10 +49,10 @@ namespace MPL::Config::Template
 
     struct DirectionalAmbientLightingColor
     {
-        using Patch = RE::BGSDirectionalAmbientLightingColors;
         std::optional<Directional> directional;
         std::optional<Color> specular;
         std::optional<float> scale;
+        using Patch = RE::BGSDirectionalAmbientLightingColors;
         void Apply(Patch* itm)
         {
             if (this->directional)
@@ -74,7 +74,6 @@ namespace MPL::Config::Template
     };
     struct Inherit
     {
-        using Patch = REX::EnumSet<RE::INTERIOR_DATA::Inherit, uint32_t>;
         std::optional<bool> AmbientColor;
         std::optional<bool> DirectionalColor;
         std::optional<bool> FogColor;
@@ -86,6 +85,7 @@ namespace MPL::Config::Template
         std::optional<bool> FogPower;
         std::optional<bool> FogMax;
         std::optional<bool> LightFadeDistance;
+        using Patch = REX::EnumSet<RE::INTERIOR_DATA::Inherit, uint32_t>;
         void Apply(Patch* itm)
         {
             if (AmbientColor) itm->set(*AmbientColor, RE::INTERIOR_DATA::Inherit::kAmbientColor);
@@ -120,7 +120,6 @@ namespace MPL::Config::Template
     };
     struct INTERIOR_DATA
     {
-        using Patch = RE::INTERIOR_DATA;
         std::optional<Color> ambient;
         std::optional<Color> directional;
         std::optional<Color> fogColorNear;
@@ -137,6 +136,7 @@ namespace MPL::Config::Template
         std::optional<uint32_t> directionalZ;
         std::optional<Inherit> inherit;
         std::optional<DirectionalAmbientLightingColor> directionalAmbientLightingColors;
+        using Patch = RE::INTERIOR_DATA;
         void Apply(Patch* itm)
         {
             if (this->ambient) this->ambient->Apply(&itm->ambient);
@@ -180,12 +180,12 @@ namespace MPL::Config::Template
         }
     };
 
-    struct LightingTemplate
+    struct BGSLightingTemplate
     {
-        using Patch = RE::BGSLightingTemplate;
         static constexpr std::string_view Name = "LightingTemplates";
         std::optional<INTERIOR_DATA> data;
         std::optional<DirectionalAmbientLightingColor> directionalAmbientLightingColors;
+        using Patch = RE::BGSLightingTemplate;
         void Apply(Patch* itm)
         {
             if (this->data)
@@ -193,9 +193,9 @@ namespace MPL::Config::Template
             if (this->directionalAmbientLightingColors)
                 this->directionalAmbientLightingColors->Apply(&itm->directionalAmbientLightingColors);
         };
-        static LightingTemplate From(Patch* itm)
+        static BGSLightingTemplate From(Patch* itm)
         {
-            LightingTemplate cpy{
+            BGSLightingTemplate cpy{
                 .data = INTERIOR_DATA::From(&itm->data),
                 .directionalAmbientLightingColors = DirectionalAmbientLightingColor::From(&itm->directionalAmbientLightingColors),
             };
