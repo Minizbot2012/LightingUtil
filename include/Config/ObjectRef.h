@@ -1,9 +1,5 @@
 #pragma once
 #include <Config.h>
-#include <RE/B/BGSLightingTemplate.h>
-#include <RE/E/ExtraRoomRefData.h>
-#include <RE/T/TESImageSpace.h>
-#include <RE/T/TESObjectREFR.h>
 #include <optional>
 namespace MPL::Config
 {
