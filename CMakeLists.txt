@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "LumaUtil" CACHE STRING "")
-set(VERSION 1.0.0 CACHE STRING "")
+set(VERSION 1.2.0 CACHE STRING "")
 set(AE_VERSION 1)
 set(SE_VERSION 1)
 set(VR_VERSION 1)
@@ -15,38 +15,38 @@ option(BUILD_SKYRIMVR "Build for Skyrim VR" OFF)
 # ---- Cache build vars ----
 
 macro(set_from_environment VARIABLE)
-    if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
-        set(${VARIABLE} $ENV{${VARIABLE}})
-    endif ()
+  if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
+    set(${VARIABLE} $ENV{${VARIABLE}})
+  endif ()
 endmacro()
 set_from_environment(VCPKG_ROOT)
 
 if(BUILD_SKYRIMAE)
-    add_compile_definitions(SKYRIM_AE)
-    add_compile_definitions(SKYRIM_SUPPORT_AE)
-    set(VCPKG_MANIFEST_FEATURES "ae")
-    set(CommonLibName "CommonLibSSE")
-    set(SkyrimVersion "Skyrim AE")
-    set(VERSION ${VERSION}.${AE_VERSION})
+  add_compile_definitions(SKYRIM_AE)
+  add_compile_definitions(SKYRIM_SUPPORT_AE)
+  set(VCPKG_MANIFEST_FEATURES "ae")
+  set(CommonLibName "CommonLibSSE")
+  set(SkyrimVersion "Skyrim AE")
+  set(VERSION ${VERSION}.${AE_VERSION})
 elseif(BUILD_SKYRIMVR)
-    add_compile_definitions(SKYRIM_VR)
-    add_compile_definitions(SKYRIMVR)
-    set(VCPKG_MANIFEST_FEATURES "vr")
-    set(CommonLibName "CommonLibVR")
-    set(SkyrimVersion "Skyrim VR")
-    set(VERSION ${VERSION}.${VR_VERSION})
+  add_compile_definitions(SKYRIM_VR)
+  add_compile_definitions(SKYRIMVR)
+  set(VCPKG_MANIFEST_FEATURES "vr")
+  set(CommonLibName "CommonLibVR")
+  set(SkyrimVersion "Skyrim VR")
+  set(VERSION ${VERSION}.${VR_VERSION})
 else()
-    add_compile_definitions(SKYRIM_SE)
-    set(VCPKG_MANIFEST_FEATURES "sse")
-    set(CommonLibName "CommonLibSSE")
-    set(SkyrimVersion "Skyrim SSE")
+  add_compile_definitions(SKYRIM_SE)
+  set(VCPKG_MANIFEST_FEATURES "sse")
+  set(CommonLibName "CommonLibSSE")
+  set(SkyrimVersion "Skyrim SSE")
 endif()
 
 if (DEFINED VCPKG_ROOT)
-    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-    set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+  set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+  set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
 else ()
-    message(
+  message(
   WARNING
   "Variable VCPKG_ROOT is not set. Continuing without vcpkg."
  )
@@ -72,7 +72,7 @@ configure_file(
 # ---- Include guards ----
 
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-    message(
+  message(
   FATAL_ERROR
    "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
  )
@@ -80,11 +80,11 @@ endif()
 
 
 if (MSVC)
-    if (NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
-        add_compile_options(
+  if (NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
+    add_compile_options(
    /MP	# Build with Multiple Processes
   )
-    endif ()
+  endif ()
 endif ()
 
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
@@ -148,7 +148,7 @@ target_precompile_headers(
 )
 
 if (MSVC)
-    target_compile_options(
+  target_compile_options(
   ${PROJECT_NAME}
   PRIVATE
    /sdl             # Enable Additional Security Checks
@@ -164,7 +164,7 @@ if (MSVC)
    "$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3>"
  )
 
-    target_link_options(
+  target_link_options(
   ${PROJECT_NAME}
   PRIVATE
    "$<$<CONFIG:DEBUG>:/INCREMENTAL;/OPT:NOREF;/OPT:NOICF>"
