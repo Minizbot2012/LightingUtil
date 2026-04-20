@@ -1,5 +1,6 @@
 #include <Config.h>
 #include <Config/Cell.h>
+#include <Config/ObjectRef.h>
 #include <Config/ImageSpace.h>
 #include <Config/Templates.h>
 #include <Hooking.h>
@@ -36,6 +37,24 @@ namespace MPL::Hooks
                 logger::info("Loading IS {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
                 MPL::Config::LoadConfigFormID<MPL::Config::ImageSpace::ImageSpace>(a_ref);
+            }
+        }
+        static inline REL::Relocation<decltype(thunk)> func;
+        static inline constexpr std::size_t index{ 0x13 };
+    };
+
+    struct InitObjRef
+    {
+        using Target = RE::TESObjectREFR;
+        static inline void thunk(Target* a_ref)
+        {
+            func(a_ref);
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && a_ref->GetBaseObject() != nullptr)
+            {
+#ifdef DEBUG
+                logger::info("Loading OBJECT REFR {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
+#endif
+                MPL::Config::LoadConfigFormID<MPL::Config::TESObjectREFR>(a_ref);
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -84,5 +103,6 @@ namespace MPL::Hooks
         stl::install_hook<InitCell>();
         stl::install_hook<InitIS>();
         stl::install_hook<InitTMPL>();
+        stl::install_hook<InitObjRef>();
     }
 }  // namespace MPL::Hooks

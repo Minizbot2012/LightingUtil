@@ -1,5 +1,6 @@
 #pragma once
 #include <ClibUtil/editorID.hpp>
+#include <cstring>
 #include <format>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -12,7 +13,7 @@ namespace MPL::Config
         template <class T>
         T* Get() const
         {
-            return RE::TESForm::LookupByID<T>(formID);
+            return formID != 0x0 ? RE::TESForm::LookupByID<T>(formID) : nullptr;
         };
         static LiteForm FromID(RE::FormID id) { return { .formID = id }; };
     };
@@ -67,31 +68,6 @@ namespace MPL::Config
                 }
             }
         }
-        // auto luma_path = std::format("./Data/SKSE/Luma/{}", T::Name);
-        // if (std::filesystem::exists(luma_path))
-        // {
-        //     for (auto dir : std::filesystem::directory_iterator(luma_path))
-        //     {
-        //         if (std::filesystem::is_directory(dir))
-        //         {
-        //             auto file_name = dir.path() / std::format("{}/{:06X}.json", form->GetFile(0)->GetFilename(), form->GetLocalFormID());
-        //             if (std::filesystem::exists(file_name))
-        //             {
-        //                 logger::info("Loading file {}", file_name.string());
-        //                 auto pch = rfl::json::load<T>(file_name.string());
-        //                 if (pch.has_value())
-        //                 {
-        //                     logger::info("Applying file {}", file_name.string());
-        //                     pch->Apply(form);
-        //                 }
-        //                 else
-        //                 {
-        //                     logger::info("Error {} {}", file_name.string(), pch.error().what());
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
     }
 }  // namespace MPL::Config
 
@@ -111,6 +87,9 @@ namespace rfl
             if (form->sourceFiles.array != nullptr)
             {
                 return "null";
+            }
+            if(auto edid = form->GetFormEditorID(); strcmp(edid, "") != 0) {
+                return std::string(form->GetFormEditorID());
             }
             return format("{:06X}:{}", form->GetLocalFormID(), form->GetFile(0)->GetFilename());
         }
