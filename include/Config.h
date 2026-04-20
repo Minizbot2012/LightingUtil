@@ -41,11 +41,10 @@ namespace MPL::Config
         requires Named<T> && Patch<T>
     void LoadConfigFormID(typename T::Patch* form)
     {
-        auto* dh = RE::TESDataHandler::GetSingleton();
-        static auto filtered = dh->files | std::views::filter([](RE::TESFile* file)
+        static auto filtered_files = RE::TESDataHandler::GetSingleton()->files | std::views::filter([](RE::TESFile* file)
                                         { std::string sum(file->summary.c_str());
                                             return sum.contains("[Luma]"); });
-        static std::vector<RE::TESFile*> valid_files(filtered.begin(), filtered.end());
+        static std::vector<RE::TESFile*> valid_files(filtered_files.begin(), filtered_files.end());
         for (auto lf : valid_files)
         {
             auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), form->GetFile(0)->GetFilename(), form->GetLocalFormID());
