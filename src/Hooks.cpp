@@ -52,7 +52,7 @@ namespace MPL::Hooks
             if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && a_ref->GetBaseObject() != nullptr)
             {
 #ifdef DEBUG
-                logger::info("Loading OBJECT REFR {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
+                logger::info("Loading ObjRef {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
 #endif
                 MPL::Config::LoadConfigFormID<MPL::Config::TESObjectREFR>(a_ref);
             }
