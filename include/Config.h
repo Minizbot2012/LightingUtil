@@ -1,8 +1,11 @@
 #pragma once
 #include <ClibUtil/editorID.hpp>
+#include <atomic>
 #include <cstring>
 #include <filesystem>
 #include <format>
+#include <mutex>
+#include <ranges>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <rfl/json/save.hpp>
@@ -35,6 +38,7 @@ namespace MPL::Config
     public:
         SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
+        std::vector<RE::TESFile*> valid_files;
     };
     static bool lumaDump = std::filesystem::exists(".lumadump");
     template <typename T>
@@ -42,38 +46,45 @@ namespace MPL::Config
     void LoadConfigFormID(typename T::Patch* form)
     {
         auto* dh = RE::TESDataHandler::GetSingleton();
-        for (auto lf : dh->files)
+        auto* sta = StatData::GetSingleton();
+        if (sta->valid_files.empty())
         {
-            std::string sum(lf->summary.c_str());
-            if (sum.contains("[Luma]"))
+            auto filtered = dh->files | std::views::filter([](RE::TESFile* file)
+                                            {
+                std::string sum(file->summary.c_str());
+                return sum.contains("[Luma]"); });
+            sta->valid_files = std::vector(filtered.begin(), filtered.end());
+        }
+        for (auto lf : sta->valid_files)
+        {
+            auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), form->GetFile(0)->GetFilename(), form->GetLocalFormID());
+            RE::BSResourceNiBinaryStream fileStream(file_name);
+            if (fileStream.good())
             {
-                auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), form->GetFile(0)->GetFilename(), form->GetLocalFormID());
-                RE::BSResourceNiBinaryStream fileStream(file_name);
-                if (fileStream.good())
+                if (fileStream.stream->totalSize > 0)
                 {
-                    if (fileStream.stream->totalSize > 0)
+                    logger::info("Loading file {}", file_name);
+                    std::string contents;
+                    contents.resize(fileStream.stream->totalSize);
+                    fileStream.read(contents.data(), fileStream.stream->totalSize);
+                    auto pch = rfl::json::read<T>(contents);
+                    if (pch.has_value())
                     {
-                        logger::info("Loading file {}", file_name);
-                        std::string contents;
-                        contents.resize(fileStream.stream->totalSize);
-                        fileStream.read(contents.data(), fileStream.stream->totalSize);
-                        auto pch = rfl::json::read<T>(contents);
-                        if (pch.has_value())
-                        {
-                            pch->Apply(form);
-                        }
-                        else
-                        {
-                            logger::info("Error {} {}", clib_util::editorID::get_editorID(form), pch.error().what());
-                        }
+                        pch->Apply(form);
+                    }
+                    else
+                    {
+                        logger::info("Error {} {}", clib_util::editorID::get_editorID(form), pch.error().what());
                     }
                 }
             }
         }
-        if(lumaDump) {
+        if (lumaDump)
+        {
             T data = T::From(form);
             std::filesystem::path path(std::format("Data/SKSE/Luma/Dump/{}/{}", T::Name, form->GetFile(0)->GetFilename()));
-            if(!std::filesystem::exists(path)) {
+            if (!std::filesystem::exists(path))
+            {
                 std::filesystem::create_directories(path);
             }
             rfl::json::save(std::format("Data/SKSE/Luma/Dump/{}/{}/{:06X}.json", T::Name, form->GetFile(0)->GetFilename(), form->GetLocalFormID()), data, 0);

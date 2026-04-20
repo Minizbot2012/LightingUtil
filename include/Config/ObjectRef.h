@@ -22,7 +22,7 @@ namespace MPL::Config
             return cpy;
         }
         static bool IsValid(TopLevel* itm) {
-            return itm->GetBaseObject()->formID = 0x15;
+            return itm->data.objectReference->formID = 0x15;
         }
     };
 
@@ -57,6 +57,9 @@ namespace MPL::Config
                 cpy.roomBound = ExtraRoomRefData::From(itm->extraList.GetByType<RE::ExtraRoomRefData>());
             }
             return cpy;
+        }
+        static bool IsValid(Patch* itm) {
+            return itm->data.objectReference != nullptr && (ExtraRoomRefData::IsValid(itm));
         }
     };
 }  // namespace MPL::Config

@@ -1,7 +1,7 @@
 #include <Config.h>
 #include <Config/Cell.h>
-#include <Config/ObjectRef.h>
 #include <Config/ImageSpace.h>
+#include <Config/ObjectRef.h>
 #include <Config/Templates.h>
 #include <Hooking.h>
 #include <Hooks.h>
@@ -49,7 +49,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
-            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && a_ref->GetBaseObject() != nullptr)
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && Config::TESObjectREFR::IsValid(a_ref))
             {
 #ifdef DEBUG
                 logger::info("Loading ObjRef {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
