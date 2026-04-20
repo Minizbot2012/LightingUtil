@@ -72,11 +72,11 @@ namespace MPL::Config
         }
         if(lumaDump) {
             T data = T::From(form);
-            std::filesystem::path path(std::format("Luma/{}/{}", T::Name, form->GetFile(0)->GetFilename()));
+            std::filesystem::path path(std::format("Data/SKSE/Luma/Dump/{}/{}", T::Name, form->GetFile(0)->GetFilename()));
             if(!std::filesystem::exists(path)) {
                 std::filesystem::create_directories(path);
             }
-            rfl::json::save(std::format("Luma/{}/{}/{:06X}.json", T::Name, form->GetFile(0)->GetFilename(), form->GetLocalFormID()), data, 0);
+            rfl::json::save(std::format("Data/SKSE/Luma/Dump/{}/{}/{:06X}.json", T::Name, form->GetFile(0)->GetFilename(), form->GetLocalFormID()), data, 0);
         }
     }
 }  // namespace MPL::Config
