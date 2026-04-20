@@ -1,10 +1,8 @@
 #pragma once
 #include <ClibUtil/editorID.hpp>
-#include <atomic>
 #include <cstring>
 #include <filesystem>
 #include <format>
-#include <mutex>
 #include <ranges>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -38,24 +36,17 @@ namespace MPL::Config
     public:
         SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
-        std::vector<RE::TESFile*> valid_files;
     };
-    static bool lumaDump = std::filesystem::exists(".lumadump");
     template <typename T>
         requires Named<T> && Patch<T>
     void LoadConfigFormID(typename T::Patch* form)
     {
         auto* dh = RE::TESDataHandler::GetSingleton();
-        auto* sta = StatData::GetSingleton();
-        if (sta->valid_files.empty())
-        {
-            auto filtered = dh->files | std::views::filter([](RE::TESFile* file)
-                                            {
-                std::string sum(file->summary.c_str());
-                return sum.contains("[Luma]"); });
-            sta->valid_files = std::vector(filtered.begin(), filtered.end());
-        }
-        for (auto lf : sta->valid_files)
+        static auto filtered = dh->files | std::views::filter([](RE::TESFile* file)
+                                        { std::string sum(file->summary.c_str());
+                                            return sum.contains("[Luma]"); });
+        static std::vector<RE::TESFile*> valid_files(filtered.begin(), filtered.end());
+        for (auto lf : valid_files)
         {
             auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), form->GetFile(0)->GetFilename(), form->GetLocalFormID());
             RE::BSResourceNiBinaryStream fileStream(file_name);
@@ -79,6 +70,7 @@ namespace MPL::Config
                 }
             }
         }
+        static bool lumaDump = std::filesystem::exists(".lumadump");
         if (lumaDump)
         {
             T data = T::From(form);
