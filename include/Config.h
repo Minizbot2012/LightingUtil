@@ -1,5 +1,6 @@
 #pragma once
 #include <ClibUtil/editorID.hpp>
+#include <algorithm>
 #include <cstring>
 #include <filesystem>
 #include <format>
@@ -7,6 +8,7 @@
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <rfl/json/save.hpp>
+#include <string>
 #include <string_view>
 namespace MPL::Config
 {
@@ -37,17 +39,20 @@ namespace MPL::Config
         SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
     };
+    static auto filtered_files = RE::TESDataHandler::GetSingleton()->files |
+                                 std::views::filter([](RE::TESFile* file)
+                                     { std::string sum(file->summary.c_str());
+                                        return sum.contains("[Luma]"); }) |
+                                 std::views::transform([](RE::TESFile* file)
+                                     { return std::string(file->GetFilename()); });
+    static std::vector<std::string> valid_files(filtered_files.begin(), filtered_files.end());
     template <typename T>
         requires Named<T> && Patch<T>
     void LoadConfigFormID(typename T::Patch* form)
     {
-        static auto filtered_files = RE::TESDataHandler::GetSingleton()->files | std::views::filter([](RE::TESFile* file)
-                                        { std::string sum(file->summary.c_str());
-                                            return sum.contains("[Luma]"); });
-        static std::vector<RE::TESFile*> valid_files(filtered_files.begin(), filtered_files.end());
-        for (auto lf : valid_files)
+        for (auto local_file : valid_files)
         {
-            auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, lf->GetFilename(), form->GetFile(0)->GetFilename(), form->GetLocalFormID());
+            auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, local_file, form->GetFile(0)->GetFilename(), form->GetLocalFormID());
             RE::BSResourceNiBinaryStream fileStream(file_name);
             if (fileStream.good())
             {
