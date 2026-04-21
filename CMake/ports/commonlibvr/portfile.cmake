@@ -2,7 +2,7 @@ vcpkg_from_git(
   OUT_SOURCE_PATH SOURCE_PATH
   URL https://github.com/alandtse/CommonLibVR
   HEAD_REF vr
-  REF 80edcdb3129db4cb9ef96c1a6f4bd210cbda3983
+  REF a52766a7a1620af9300e880f82c7990b844c9e76
   PATCHES
         "${CMAKE_CURRENT_LIST_DIR}/fixcmake.patch"
 )
