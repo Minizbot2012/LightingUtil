@@ -23,7 +23,7 @@ namespace MPL::Config
         }
         static bool IsValid(TopLevel* itm)
         {
-            return itm->data.objectReference->formID = 0x15;
+            return itm->data.objectReference->formID == 0x15;
         }
     };
 
