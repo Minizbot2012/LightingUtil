@@ -76,14 +76,13 @@ namespace MPL::Config::Cell
         using Patch = RE::TESObjectCELL;
         void Apply(Patch* itm)
         {
-            if (flags) this->flags->Apply(&itm->cellFlags);
+            if (this->flags) this->flags->Apply(&itm->cellFlags);
             if (this->skylight)
             {
                 auto frm = this->skylight->Get<RE::TESRegion>();
                 if (frm != nullptr)
                 {
                     RE::ExtraCellSkyRegion* dat = nullptr;
-
                     if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
                     {
                         dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
@@ -96,12 +95,11 @@ namespace MPL::Config::Cell
                     dat->skyRegion = frm;
                 }
             }
-            if (this->lighting && itm->IsInteriorCell()) this->lighting->Apply(itm->cellData.interior);
+            if (this->lighting) this->lighting->Apply(itm->GetLighting());
             if (this->lightTemplate)
             {
                 auto frm = this->lightTemplate->Get<RE::BGSLightingTemplate>();
-                if (frm != nullptr)
-                    itm->lightingTemplate = frm;
+                if (frm != nullptr) itm->lightingTemplate = frm;
             }
             if (this->imagespace)
             {
@@ -126,7 +124,6 @@ namespace MPL::Config::Cell
         {
             TESObjectCELL cpy{
                 .flags = Flags::From(&itm->cellFlags),
-                .skylight = std::nullopt,
             };
             if (itm->IsInteriorCell())
             {
@@ -143,14 +140,12 @@ namespace MPL::Config::Cell
             if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellImageSpace>();
-                if (dat->imageSpace != nullptr)
-                    cpy.imagespace = MPL::Config::LiteForm::FromID(dat->imageSpace->formID);
+                if (dat->imageSpace != nullptr) cpy.imagespace = MPL::Config::LiteForm::FromID(dat->imageSpace->formID);
             }
             if (itm->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
                 auto* dat = itm->extraList.GetByType<RE::ExtraCellSkyRegion>();
-                if (dat->skyRegion != nullptr)
-                    cpy.skylight = MPL::Config::LiteForm::FromID(dat->skyRegion->formID);
+                if (dat->skyRegion != nullptr) cpy.skylight = MPL::Config::LiteForm::FromID(dat->skyRegion->formID);
             }
             return cpy;
         }

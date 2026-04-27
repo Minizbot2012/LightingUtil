@@ -37,16 +37,19 @@ namespace MPL::Config
         {
             if (ExtraRoomRefData::IsValid(itm))
             {
-                if (itm->extraList.HasType<RE::ExtraRoomRefData>())
+                if (this->roomBound)
                 {
-                    auto rrd = itm->extraList.GetByType<RE::ExtraRoomRefData>();
-                    this->roomBound->Apply(rrd);
-                }
-                else
-                {
-                    auto erd = RE::ExtraRoomRefData::Create<RE::ExtraRoomRefData>();
-                    this->roomBound->Apply(erd);
-                    itm->extraList.Add(erd);
+                    if (itm->extraList.HasType<RE::ExtraRoomRefData>())
+                    {
+                        auto rrd = itm->extraList.GetByType<RE::ExtraRoomRefData>();
+                        this->roomBound->Apply(rrd);
+                    }
+                    else
+                    {
+                        auto erd = RE::ExtraRoomRefData::Create<RE::ExtraRoomRefData>();
+                        this->roomBound->Apply(erd);
+                        itm->extraList.Add(erd);
+                    }
                 }
             }
         }

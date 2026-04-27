@@ -55,12 +55,9 @@ namespace MPL::Config::Template
         using Patch = RE::BGSDirectionalAmbientLightingColors;
         void Apply(Patch* itm)
         {
-            if (this->directional)
-                this->directional->Apply(&itm->directional);
-            if (this->specular)
-                this->specular->Apply(&itm->specular);
-            if (this->scale)
-                itm->fresnelPower = *this->scale;
+            if (this->directional) this->directional->Apply(&itm->directional);
+            if (this->specular) this->specular->Apply(&itm->specular);
+            if (this->scale) itm->fresnelPower = *this->scale;
         };
         static DirectionalAmbientLightingColor From(Patch* itm)
         {
@@ -88,17 +85,17 @@ namespace MPL::Config::Template
         using Patch = REX::EnumSet<RE::INTERIOR_DATA::Inherit, uint32_t>;
         void Apply(Patch* itm)
         {
-            if (AmbientColor) itm->set(*AmbientColor, RE::INTERIOR_DATA::Inherit::kAmbientColor);
-            if (DirectionalColor) itm->set(*DirectionalColor, RE::INTERIOR_DATA::Inherit::kDirectionalColor);
-            if (FogColor) itm->set(*FogColor, RE::INTERIOR_DATA::Inherit::kFogColor);
-            if (FogNear) itm->set(*FogNear, RE::INTERIOR_DATA::Inherit::kFogNear);
-            if (FogFar) itm->set(*FogFar, RE::INTERIOR_DATA::Inherit::kFogFar);
-            if (DirectionalRotation) itm->set(*DirectionalRotation, RE::INTERIOR_DATA::Inherit::kDirectionalRotation);
-            if (DirectionalFade) itm->set(*DirectionalFade, RE::INTERIOR_DATA::Inherit::kDirectionalFade);
-            if (ClipDistance) itm->set(*ClipDistance, RE::INTERIOR_DATA::Inherit::kClipDistance);
-            if (FogPower) itm->set(*FogPower, RE::INTERIOR_DATA::Inherit::kFogPower);
-            if (FogMax) itm->set(*FogMax, RE::INTERIOR_DATA::Inherit::kFogMax);
-            if (LightFadeDistance) itm->set(*LightFadeDistance, RE::INTERIOR_DATA::Inherit::kLightFadeDistances);
+            if (this->AmbientColor) itm->set(*this->AmbientColor, RE::INTERIOR_DATA::Inherit::kAmbientColor);
+            if (this->DirectionalColor) itm->set(*this->DirectionalColor, RE::INTERIOR_DATA::Inherit::kDirectionalColor);
+            if (this->FogColor) itm->set(*this->FogColor, RE::INTERIOR_DATA::Inherit::kFogColor);
+            if (this->FogNear) itm->set(*this->FogNear, RE::INTERIOR_DATA::Inherit::kFogNear);
+            if (this->FogFar) itm->set(*this->FogFar, RE::INTERIOR_DATA::Inherit::kFogFar);
+            if (this->DirectionalRotation) itm->set(*this->DirectionalRotation, RE::INTERIOR_DATA::Inherit::kDirectionalRotation);
+            if (this->DirectionalFade) itm->set(*this->DirectionalFade, RE::INTERIOR_DATA::Inherit::kDirectionalFade);
+            if (this->ClipDistance) itm->set(*this->ClipDistance, RE::INTERIOR_DATA::Inherit::kClipDistance);
+            if (this->FogPower) itm->set(*this->FogPower, RE::INTERIOR_DATA::Inherit::kFogPower);
+            if (this->FogMax) itm->set(*this->FogMax, RE::INTERIOR_DATA::Inherit::kFogMax);
+            if (this->LightFadeDistance) itm->set(*this->LightFadeDistance, RE::INTERIOR_DATA::Inherit::kLightFadeDistances);
         }
         static Inherit From(Patch* itm)
         {
@@ -188,10 +185,8 @@ namespace MPL::Config::Template
         using Patch = RE::BGSLightingTemplate;
         void Apply(Patch* itm)
         {
-            if (this->data)
-                this->data->Apply(&itm->data);
-            if (this->directionalAmbientLightingColors)
-                this->directionalAmbientLightingColors->Apply(&itm->directionalAmbientLightingColors);
+            if (this->data) this->data->Apply(&itm->data);
+            if (this->directionalAmbientLightingColors) this->directionalAmbientLightingColors->Apply(&itm->directionalAmbientLightingColors);
         };
         static BGSLightingTemplate From(Patch* itm)
         {

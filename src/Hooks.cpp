@@ -1,5 +1,5 @@
-#include <Hooks.h>
 #include <Config.h>
+#include <Hooks.h>
 namespace MPL::Hooks
 {
     struct LoadCELL

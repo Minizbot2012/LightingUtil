@@ -1,15 +1,15 @@
 #pragma once
+#include <ClibUtil/editorID.hpp>
 #include <Config/Cell.h>
 #include <Config/Common.h>
 #include <Config/ImageSpace.h>
 #include <Config/ObjectRef.h>
 #include <Config/Templates.h>
-#include <filesystem>
 #include <format>
 #include <rfl/json.hpp>
+#include <rfl/json/write.hpp>
 #include <string_view>
 #include <vector>
-#include <ClibUtil/editorID.hpp>
 namespace MPL::Config
 {
     template <typename T>
@@ -34,15 +34,13 @@ namespace MPL::Config
     void LoadConfigFormID(typename T::Patch* form)
     {
         static std::vector<std::string> valid_files = RE::TESDataHandler::GetSingleton()->files |
-                                              std::views::filter([](RE::TESFile* file)
-                                                  {
+                                                      std::views::filter([](RE::TESFile* file)
+                                                          {
             std::string sum(file->summary.c_str());
             return sum.contains("[Luma]"); }) |
-                                              std::views::transform([](RE::TESFile* file)
-                                                  {
-                                                      return std::string(file->GetFilename());
-                                                   }) |
-                                              std::ranges::to<std::vector>();
+                                                      std::views::transform([](RE::TESFile* file)
+                                                          { return std::string(file->GetFilename()); }) |
+                                                      std::ranges::to<std::vector>();
         for (auto local_file : valid_files)
         {
             auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, local_file, form->GetFile(0)->GetFilename(), form->GetLocalFormID());
@@ -51,34 +49,34 @@ namespace MPL::Config
             {
                 if (fileStream.stream->totalSize > 0)
                 {
-    #    ifndef NDEBUG
+#ifndef NDEBUG
                     logger::info("Loading file {}", file_name);
-    #    endif
+#endif
                     std::string contents;
                     contents.resize(fileStream.stream->totalSize);
                     fileStream.read(contents.data(), fileStream.stream->totalSize);
                     auto pch = rfl::json::read<T>(contents);
                     if (pch.has_value())
                     {
+#ifndef NDEBUG
+                        auto jso = rfl::json::write(*pch);
+                        auto old = rfl::json::write(T::From(form));
+                        logger::info("New: {}", jso);
+                        logger::info("Old: {}", old);
+#endif
                         pch->Apply(form);
+#ifndef NDEBUG
+                        auto post = rfl::json::write(T::From(form));
+                        logger::info("Post: {}", post);
+#endif
                     }
+
                     else
                     {
                         logger::info("Error {} {}", clib_util::editorID::get_editorID(form), pch.error().what());
                     }
                 }
             }
-        }
-        static bool lumaDump = std::filesystem::exists(".lumadump");
-        if (lumaDump)
-        {
-            T data = T::From(form);
-            std::filesystem::path path(std::format("Data/SKSE/Luma/Dump/{}/{}", T::Name, form->GetFile(0)->GetFilename()));
-            if (!std::filesystem::exists(path))
-            {
-                std::filesystem::create_directories(path);
-            }
-            rfl::json::save(std::format("Data/SKSE/Luma/Dump/{}/{}/{:06X}.json", T::Name, form->GetFile(0)->GetFilename(), form->GetLocalFormID()), data, 0);
         }
     }
 }  // namespace MPL::Config

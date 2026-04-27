@@ -17,7 +17,7 @@ namespace MPL::Config
                 return "null";
             }
             auto form = this->Get<RE::TESForm>();
-            if (form->sourceFiles.array != nullptr)
+            if (form->sourceFiles.array == nullptr)
             {
                 return "null";
             }
