@@ -12,7 +12,7 @@ namespace MPL::Papyrus
                 auto dat = cl->extraList.GetByType<RE::ExtraCellSkyRegion>();
                 if (dat->skyRegion != nullptr)
                 {
-#ifdef DEBUG
+#ifndef NDEBUG
                     logger::info("{:X}:{}", dat->skyRegion->GetLocalFormID(), dat->skyRegion->sourceFiles.array->front()->GetFilename());
 #endif
                     return clib_util::editorID::get_editorID(dat->skyRegion);
@@ -24,7 +24,7 @@ namespace MPL::Papyrus
                 auto sky = RE::Sky::GetSingleton();
                 if (sky && sky->region)
                 {
-#ifdef DEBUG
+#ifndef NDEBUG
                     logger::info("{:X}:{}", sky->region->GetLocalFormID(), sky->region->sourceFiles.array->front()->GetFilename());
 #endif
                     sta->lastRegion = sky->region;
