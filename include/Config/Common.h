@@ -1,6 +1,5 @@
 #pragma once
 #include <Config/Forms.h>
-#include <locale>
 #include <rfl.hpp>
 
 namespace MPL::Config
@@ -13,16 +12,16 @@ namespace MPL::Config
         using Patch = RE::ImageSpaceBaseData::Tint::ColorF;
         void Apply(Patch* itm)
         {
-            if (this->red) itm->red = ((float)*this->red)/255.0;
-            if (this->green) itm->green = ((float)*this->green)/255.0;
-            if (this->blue) itm->blue = ((float)*this->blue/255.0);
+            if (this->red) itm->red = ((float)*this->red)/255.f;
+            if (this->green) itm->green = ((float)*this->green)/255.f;
+            if (this->blue) itm->blue = ((float)*this->blue/255.f);
         }
         static ColorF From(Patch* itm)
         {
             ColorF cpy{
-                .red = itm->red,
-                .green = itm->green,
-                .blue = itm->blue,
+                .red = (uint32_t)(itm->red*255),
+                .green = (uint32_t)(itm->green*255),
+                .blue = (uint32_t)(itm->blue*255),
             };
             return cpy;
         }
