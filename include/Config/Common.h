@@ -1,20 +1,21 @@
 #pragma once
 #include <Config/Forms.h>
+#include <locale>
 #include <rfl.hpp>
 
 namespace MPL::Config
 {
     struct ColorF
     {
-        std::optional<float> red;
-        std::optional<float> green;
-        std::optional<float> blue;
+        std::optional<uint32_t> red;
+        std::optional<uint32_t> green;
+        std::optional<uint32_t> blue;
         using Patch = RE::ImageSpaceBaseData::Tint::ColorF;
         void Apply(Patch* itm)
         {
-            if (this->red) itm->red = *this->red;
-            if (this->green) itm->green = *this->green;
-            if (this->blue) itm->blue = *this->blue;
+            if (this->red) itm->red = ((float)*this->red)/255.0;
+            if (this->green) itm->green = ((float)*this->green)/255.0;
+            if (this->blue) itm->blue = ((float)*this->blue/255.0);
         }
         static ColorF From(Patch* itm)
         {
