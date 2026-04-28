@@ -80,7 +80,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref, RE::TESObjectCELL* cl)
         {
             func(a_ref, cl);
-            if (cl != nullptr && cl->sourceFiles.array != nullptr)
+            if (cl != nullptr && cl->sourceFiles.array != nullptr && !cl->sourceFiles.array->empty())
             {
 #ifndef NDEBUG
                 logger::info("Player changed cell to {:06X}:{}", cl->GetLocalFormID(), cl->GetFile(0)->GetFilename());
