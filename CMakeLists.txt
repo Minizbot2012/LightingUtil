@@ -4,8 +4,6 @@ set(VERSION 1.2.2 CACHE STRING "")
 set(AE_VERSION 1)
 set(SE_VERSION 1)
 set(VR_VERSION 1)
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ---- Options ----
@@ -40,6 +38,7 @@ else()
   set(VCPKG_MANIFEST_FEATURES "sse")
   set(CommonLibName "CommonLibSSE")
   set(SkyrimVersion "Skyrim SSE")
+  set(VERSION ${VERSION}.${SE_VERSION})
 endif()
 
 if (DEFINED VCPKG_ROOT)

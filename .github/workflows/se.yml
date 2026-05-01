@@ -25,11 +25,6 @@ jobs:
           cd ${{ env.VCPKG_INSTALLATION_ROOT }}
           bootstrap-vcpkg.bat -disableMetrics
           vcpkg integrate install
-      - name: vcpkg cache
-        id: vcpkg-cache
-        uses: TAServers/vcpkg-cache@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Configure CMake
         run: cmake --preset ${{env.PRESET}}
         env:

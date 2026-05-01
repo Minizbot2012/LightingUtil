@@ -1,12 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "version-string": "1",
-  "dependencies": [
-    "clib-util",
-    {
-      "name": "reflectcpp"
-    }
-  ],
+  "dependencies": ["clib-util", "reflectcpp"],
   "features": {
     "ae": {
       "description": "Build for AE",
