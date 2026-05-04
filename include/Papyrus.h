@@ -86,6 +86,79 @@ namespace MPL::Papyrus
     {
         MPL::Config::StatData::GetSingleton()->cellLoad.Register(listener);
     }
+
+    //REGION: EmittanceUtil
+
+    // If the ref's emittance source is a Region (the standard "interior
+    // weather" hookup), the region's cached emittanceColor lags one weather
+    // behind on ForceWeather. Copy the live value out of
+    // Sky::skyColor[kEffectLighting] (slot 9 — the engine's per-weather
+    // "emittance" color, which CommonLib happens to expose under the name
+    // kEffectLighting) so UpdateRefLight() picks up the new color.
+    static void PatchRegionFromSky(RE::ExtraEmittanceSource* a_extra, RE::Sky* a_sky)
+    {
+        if (!a_extra || !a_sky) {
+            return;
+        }
+        auto* source = a_extra->source;
+        if (!source || !source->Is(RE::FormType::Region)) {
+            return;
+        }
+        auto* region = static_cast<RE::TESRegion*>(source);
+        region->emittanceColor = a_sky->skyColor[RE::TESWeather::ColorTypes::kEffectLighting];
+        region->currentWeather = a_sky->currentWeather;
+    }
+
+    // Calls TESObjectREFR::UpdateRefLight() on every loaded reference in the
+    // cell that carries an ExtraEmittanceSource. That is the engine routine
+    // which re-reads the emittance source's current effect color and pushes
+    // it into the ref's 3D (light bulbs, window statics with an emittance
+    // link, etc.).
+    //
+    // The engine normally only fans this out during a real weather transition
+    // tick, so forced/instant weather changes leave emittances stale.
+    inline void RefreshCellEmittances(RE::StaticFunctionTag*, RE::TESObjectCELL* a_cell)
+    {
+        if (!a_cell) {
+            return;
+        }
+
+        auto* sky = RE::Sky::GetSingleton();
+        std::uint32_t refreshed = 0;
+
+        a_cell->ForEachReference([&](RE::TESObjectREFR* a_ref) {
+            if (!a_ref || !a_ref->Is3DLoaded()) {
+                return RE::BSContainer::ForEachResult::kContinue;
+            }
+            auto* extra = a_ref->extraList.GetByType<RE::ExtraEmittanceSource>();
+            if (!extra) {
+                return RE::BSContainer::ForEachResult::kContinue;
+            }
+            PatchRegionFromSky(extra, sky);
+            a_ref->UpdateRefLight();
+            ++refreshed;
+            return RE::BSContainer::ForEachResult::kContinue;
+        });
+
+        logger::info("RefreshCellEmittances: cell {:08X} refreshed={}",
+            a_cell->GetFormID(), refreshed);
+    }
+
+    // Single-ref variant for callers that already know the specific reference
+    // they want to refresh (e.g. a window static added at runtime).
+    inline void RefreshRefEmittance(RE::StaticFunctionTag*, RE::TESObjectREFR* a_ref)
+    {
+        if (!a_ref || !a_ref->Is3DLoaded()) {
+            return;
+        }
+        if (auto* extra = a_ref->extraList.GetByType<RE::ExtraEmittanceSource>()) {
+            PatchRegionFromSky(extra, RE::Sky::GetSingleton());
+        }
+        a_ref->UpdateRefLight();
+    }
+
+    //END REGION: EMITTANCEUTIL
+
     inline bool Bind(RE::BSScript::IVirtualMachine* vm)
     {
         vm->RegisterFunction("GetRegion", "CLUtil", GetRegion);
@@ -93,6 +166,10 @@ namespace MPL::Papyrus
         vm->RegisterFunction("RegisterForCellloadForm", "CLUtil", RegisterForOnCellLoadForm);
         vm->RegisterFunction("RegisterForCellloadRef", "CLUtil", RegisterForOnCellLoadAlias);
         vm->RegisterFunction("RegisterForCellloadMgef", "CLUtil", RegisterForOnCellLoadMgef);
+        //BEGIN REGION: Emittance Util VM REGISTER
+        vm->RegisterFunction("RefreshCellEmittances", "EmittanceUtil", RefreshCellEmittances);
+        vm->RegisterFunction("RefreshRefEmittance",  "EmittanceUtil", RefreshRefEmittance);
+        //END REGION: Emittance Util VM REGISTER
         return true;
     }
 }  // namespace MPL::Papyrus
