@@ -27,9 +27,6 @@ jobs:
           vcpkg integrate install
       - name: Configure CMake
         run: cmake --preset ${{env.PRESET}}
-        env:
-          VCPKG_FEATURE_FLAGS: "binarycaching"
-          VCPKG_BINARY_SOURCES: "clear;files,${{ steps.vcpkg-cache.outputs.path }},readwrite"
       - name: Build
         run: cmake --build --preset ${{env.PRESET}}
       - name: Archive
