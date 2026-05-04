@@ -79,6 +79,7 @@ namespace MPL::Hooks
         using Target = RE::PlayerCharacter;
         static inline void thunk(Target* a_ref, RE::TESObjectCELL* cl)
         {
+            logger::info("{} {}", a_ref != nullptr, cl!=nullptr);
             func(a_ref, cl);
             if (cl != nullptr && cl->sourceFiles.array != nullptr && !cl->sourceFiles.array->empty())
             {

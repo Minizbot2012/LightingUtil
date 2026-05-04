@@ -43,7 +43,6 @@ endif()
 
 if (DEFINED VCPKG_ROOT)
   set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-  set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
 else ()
   message(
   WARNING
@@ -153,7 +152,7 @@ if (MSVC)
    /sdl             # Enable Additional Security Checks
    /utf-8           # Set Source and Executable character sets to UTF-8
    /Zi              # Debug Information Format
-
+   /MD
    /permissive-     # Standards conformance
    /Zc:preprocessor # Enable preprocessor conformance mode
 
