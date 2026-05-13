@@ -1,5 +1,6 @@
 #include <Config.h>
 #include <Hooks.h>
+#include <RE/T/TESObjectREFR.h>
 namespace MPL::Hooks
 {
     struct LoadCELL
@@ -77,7 +78,7 @@ namespace MPL::Hooks
     struct InitCell
     {
         using Target = RE::PlayerCharacter;
-        static inline void thunk(Target* a_ref, RE::TESObjectCELL* cl)
+        static inline void thunk(RE::Actor* a_ref, const RE::TESObjectCELL* cl)
         {
             func(a_ref, cl);
             if (cl != nullptr)

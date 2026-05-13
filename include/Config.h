@@ -5,7 +5,9 @@
 #include <Config/ImageSpace.h>
 #include <Config/ObjectRef.h>
 #include <Config/Templates.h>
+#include <REX/REX/Singleton.h>
 #include <format>
+#include <memory>
 #include <rfl/json.hpp>
 #include <rfl/json/write.hpp>
 #include <string_view>
@@ -23,10 +25,18 @@ namespace MPL::Config
         t.Apply(static_cast<typename T::Patch*>(nullptr));
     };
 
-    class StatData : public REX::Singleton<StatData>
+    class StatData
     {
+    private:
+        StatData() = default;
     public:
-        SKSE::RegistrationSet<RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
+        StatData(StatData&) = delete;
+        StatData(StatData&&) = delete;
+        static StatData* GetSingleton() {
+            static StatData impl;
+            return std::addressof(impl);
+        }
+        SKSE::RegistrationSet<const RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
     };
     template <typename T>

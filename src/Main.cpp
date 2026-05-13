@@ -43,7 +43,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 
 void Serialize(SKSE::SerializationInterface* ser)
 {
-    MPL::Config::StatData::GetSingleton()->cellLoad.Save(ser, 'CLCH', 0x1);
+    MPL::Config::StatData::GetSingleton()->cellLoad.Save(ser, 'CLCH', 0x4);
 }
 
 void Deserialize(SKSE::SerializationInterface* ser)
