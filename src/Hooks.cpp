@@ -79,15 +79,10 @@ namespace MPL::Hooks
         using Target = RE::PlayerCharacter;
         static inline void thunk(Target* a_ref, RE::TESObjectCELL* cl)
         {
-            logger::info("{} {}", a_ref != nullptr, cl!=nullptr);
             func(a_ref, cl);
-            if (cl != nullptr && cl->sourceFiles.array != nullptr && !cl->sourceFiles.array->empty())
+            if (cl != nullptr)
             {
-#ifndef NDEBUG
-                logger::info("Player changed cell to {:06X}:{}", cl->GetLocalFormID(), cl->GetFile(0)->GetFilename());
-#endif
-                auto* sta = MPL::Config::StatData::GetSingleton();
-                sta->cellLoad.QueueEvent(cl);
+                MPL::Config::StatData::GetSingleton()->cellLoad.QueueEvent(cl);
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
