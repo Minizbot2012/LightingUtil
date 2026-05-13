@@ -23,12 +23,6 @@
       }
     },
     {
-      "name": "vs2022",
-      "hidden": true,
-      "generator": "Visual Studio 17 2022",
-      "toolset": "v143"
-    },
-    {
       "name": "vs2026",
       "hidden": true,
       "generator": "Visual Studio 18 2026",
@@ -56,18 +50,6 @@
       }
     },
     {
-      "name": "vs2022-windows-vcpkg-se",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2022", "se"]
-    },
-    {
-      "name": "vs2022-windows-vcpkg-ae",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2022", "ae"]
-    },
-    {
-      "name": "vs2022-windows-vcpkg-vr",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2022", "vr"]
-    },
-    {
       "name": "vs2026-windows-vcpkg-se",
       "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "se"]
     },
@@ -82,21 +64,6 @@
   ],
   "buildPresets": [
     {
-      "name": "vs2022-windows-vcpkg-ae",
-      "configurePreset": "vs2022-windows-vcpkg-ae",
-      "configuration": "Release"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-se",
-      "configurePreset": "vs2022-windows-vcpkg-se",
-      "configuration": "Release"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-vr",
-      "configurePreset": "vs2022-windows-vcpkg-vr",
-      "configuration": "Release"
-    },
-    {
       "name": "vs2026-windows-vcpkg-ae",
       "configurePreset": "vs2026-windows-vcpkg-ae",
       "configuration": "Release"
@@ -110,21 +77,6 @@
       "name": "vs2026-windows-vcpkg-vr",
       "configurePreset": "vs2026-windows-vcpkg-vr",
       "configuration": "Release"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-ae-debug",
-      "configurePreset": "vs2022-windows-vcpkg-ae",
-      "configuration": "Debug"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-se-debug",
-      "configurePreset": "vs2022-windows-vcpkg-se",
-      "configuration": "Debug"
-    },
-    {
-      "name": "vs2022-windows-vcpkg-vr-debug",
-      "configurePreset": "vs2022-windows-vcpkg-vr",
-      "configuration": "Debug"
     },
     {
       "name": "vs2026-windows-vcpkg-ae-debug",
