@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  PRESET: "vs2022-windows-vcpkg-se"
+  PRESET: "vs2026-windows-vcpkg-se"
   PROJECT_NAME: LumaUtil
   VCPKG_ROOT: "C:\\vcpkg"
 
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-2025
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
       - name: Update VCPKG
