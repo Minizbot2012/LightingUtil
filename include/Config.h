@@ -25,17 +25,9 @@ namespace MPL::Config
         t.Apply(static_cast<typename T::Patch*>(nullptr));
     };
 
-    class StatData
+    class StatData : public REX::Singleton<StatData>
     {
-    private:
-        StatData() = default;
     public:
-        StatData(StatData&) = delete;
-        StatData(StatData&&) = delete;
-        static StatData* GetSingleton() {
-            static StatData impl;
-            return std::addressof(impl);
-        }
         SKSE::RegistrationSet<const RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
     };

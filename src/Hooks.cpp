@@ -1,6 +1,5 @@
 #include <Config.h>
 #include <Hooks.h>
-#include <RE/T/TESObjectREFR.h>
 namespace MPL::Hooks
 {
     struct LoadCELL
@@ -78,16 +77,18 @@ namespace MPL::Hooks
     struct InitCell
     {
         using Target = RE::PlayerCharacter;
-        static inline void thunk(RE::Actor* a_ref, const RE::TESObjectCELL* cl)
+        static inline void thunk(const RE::PlayerCharacter* a_ref, const RE::TESObjectCELL* cl)
         {
             func(a_ref, cl);
-            if (cl != nullptr)
+            if (a_ref != nullptr && a_ref->IsPlayerRef() && cl != nullptr)
             {
+                logger::info("Cell Change Event Triggered");
                 MPL::Config::StatData::GetSingleton()->cellLoad.QueueEvent(cl);
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
         static inline constexpr std::size_t index{ 0x98 };
+        static inline constexpr std::size_t index_vr{ 0x99 };
     };
     void Install()
     {

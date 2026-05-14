@@ -34,63 +34,24 @@
       "binaryDir": "${sourceDir}/build"
     },
     {
-      "name": "ae",
+      "name": "ng",
       "hidden": true,
-      "binaryDir": "${sourceDir}/buildae",
-      "cacheVariables": {
-        "BUILD_SKYRIMAE": true
-      }
+      "binaryDir": "${sourceDir}/build"
     },
     {
-      "name": "vr",
-      "hidden": true,
-      "binaryDir": "${sourceDir}/buildvr",
-      "cacheVariables": {
-        "BUILD_SKYRIMVR": true
-      }
-    },
-    {
-      "name": "vs2026-windows-vcpkg-se",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "se"]
-    },
-    {
-      "name": "vs2026-windows-vcpkg-ae",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "ae"]
-    },
-    {
-      "name": "vs2026-windows-vcpkg-vr",
-      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "vr"]
+      "name": "vs2026-windows-vcpkg",
+      "inherits": ["cmake-dev", "vcpkg", "windows", "vs2026", "ng"]
     }
   ],
   "buildPresets": [
     {
-      "name": "vs2026-windows-vcpkg-ae",
-      "configurePreset": "vs2026-windows-vcpkg-ae",
+      "name": "vs2026-windows-vcpkg",
+      "configurePreset": "vs2026-windows-vcpkg",
       "configuration": "Release"
     },
     {
-      "name": "vs2026-windows-vcpkg-se",
-      "configurePreset": "vs2026-windows-vcpkg-se",
-      "configuration": "Release"
-    },
-    {
-      "name": "vs2026-windows-vcpkg-vr",
-      "configurePreset": "vs2026-windows-vcpkg-vr",
-      "configuration": "Release"
-    },
-    {
-      "name": "vs2026-windows-vcpkg-ae-debug",
-      "configurePreset": "vs2026-windows-vcpkg-ae",
-      "configuration": "Debug"
-    },
-    {
-      "name": "vs2026-windows-vcpkg-se-debug",
-      "configurePreset": "vs2026-windows-vcpkg-se",
-      "configuration": "Debug"
-    },
-    {
-      "name": "vs2026-windows-vcpkg-vr-debug",
-      "configurePreset": "vs2026-windows-vcpkg-vr",
+      "name": "vs2026-windows-vcpkg-debug",
+      "configurePreset": "vs2026-windows-vcpkg",
       "configuration": "Debug"
     }
   ]

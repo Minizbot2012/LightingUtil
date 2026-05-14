@@ -1,4 +1,4 @@
-name: Build Skyrim SE
+name: Build Skyrim NG
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  PRESET: "vs2026-windows-vcpkg-se"
+  PRESET: "vs2026-windows-vcpkg"
   PROJECT_NAME: LumaUtil
   VCPKG_ROOT: "C:\\vcpkg"
 
@@ -30,18 +30,18 @@ jobs:
       - name: Build
         run: cmake --build --preset ${{env.PRESET}}
       - name: Archive
-        run: 7z a ${{ env.PROJECT_NAME }}-SE.zip ./build/release/*.*
+        run: 7z a ${{ env.PROJECT_NAME }}-AE.zip ./buildae/release/*.*
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "Skyrim SE"
+          name: "Skyrim NG"
           path: |
             ./build/release/*.*
       - name: Create & Upload Release
         id: upload-release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.PROJECT_NAME }}-SE.zip
+          files: ${{ env.PROJECT_NAME }}-AE.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.PROJECT_NAME }} ${{ github.ref_name }}
         if: github.ref_type == 'tag'

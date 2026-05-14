@@ -99,7 +99,7 @@ namespace MPL::Config::Cell
             if (this->lightTemplate)
             {
                 auto frm = this->lightTemplate->Get<RE::BGSLightingTemplate>();
-                if (frm != nullptr) itm->lightingTemplate = frm;
+                if (frm != nullptr) itm->GetRuntimeData().lightingTemplate = frm;
             }
             if (this->imagespace)
             {
@@ -127,15 +127,15 @@ namespace MPL::Config::Cell
             };
             if (itm->IsInteriorCell())
             {
-                cpy.lighting = Template::INTERIOR_DATA::From(itm->cellData.interior);
+                cpy.lighting = Template::INTERIOR_DATA::From(itm->GetRuntimeData().cellData.interior);
                 cpy.lighting->ambient->alpha = {};
                 cpy.lighting->fogColorFar->alpha = {};
                 cpy.lighting->fogColorNear->alpha = {};
                 cpy.lighting->directional->alpha = {};
             }
-            if (itm->lightingTemplate != nullptr)
+            if (itm->GetRuntimeData().lightingTemplate != nullptr)
             {
-                cpy.lightTemplate = MPL::Config::LiteForm::FromID(itm->lightingTemplate->formID);
+                cpy.lightTemplate = MPL::Config::LiteForm::FromID(itm->GetRuntimeData().lightingTemplate->formID);
             }
             if (itm->extraList.HasType<RE::ExtraCellImageSpace>())
             {

@@ -1,14 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "LumaUtil" CACHE STRING "")
 set(VERSION 1.3.0 CACHE STRING "")
-set(AE_VERSION 1)
-set(SE_VERSION 1)
-set(VR_VERSION 1)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# ---- Options ----
-option(BUILD_SKYRIMAE "Build for Skyrim AE" OFF)
-option(BUILD_SKYRIMVR "Build for Skyrim VR" OFF)
 
 # ---- Cache build vars ----
 
@@ -18,28 +11,6 @@ macro(set_from_environment VARIABLE)
   endif ()
 endmacro()
 set_from_environment(VCPKG_ROOT)
-
-if(BUILD_SKYRIMAE)
-  add_compile_definitions(SKYRIM_AE)
-  add_compile_definitions(SKYRIM_SUPPORT_AE)
-  set(VCPKG_MANIFEST_FEATURES "ae")
-  set(CommonLibName "CommonLibSSE")
-  set(SkyrimVersion "Skyrim AE")
-  set(VERSION ${VERSION}.${AE_VERSION})
-elseif(BUILD_SKYRIMVR)
-  add_compile_definitions(SKYRIM_VR)
-  add_compile_definitions(SKYRIMVR)
-  set(VCPKG_MANIFEST_FEATURES "vr")
-  set(CommonLibName "CommonLibVR")
-  set(SkyrimVersion "Skyrim VR")
-  set(VERSION ${VERSION}.${VR_VERSION})
-else()
-  add_compile_definitions(SKYRIM_SE)
-  set(VCPKG_MANIFEST_FEATURES "sse")
-  set(CommonLibName "CommonLibSSE")
-  set(SkyrimVersion "Skyrim SSE")
-  set(VERSION ${VERSION}.${SE_VERSION})
-endif()
 
 if (DEFINED VCPKG_ROOT)
   set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
@@ -89,6 +60,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 
 # ---- Add source files ----
 
+add_subdirectory(extern/CommonLibSSE)
 include(CMake/headerlist.cmake)
 include(CMake/sourcelist.cmake)
 
@@ -127,13 +99,12 @@ target_include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-find_package(${CommonLibName} CONFIG REQUIRED)
 find_package(reflectcpp CONFIG REQUIRED)
 
 target_link_libraries(
  ${PROJECT_NAME}
  PRIVATE
-  ${CommonLibName}::${CommonLibName}
+  CommonLibSSE::CommonLibSSE
   reflectcpp::reflectcpp
 )
 
