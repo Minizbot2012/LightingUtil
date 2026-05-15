@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "LumaUtil" CACHE STRING "")
-set(VERSION 1.3.0 CACHE STRING "")
+set(VERSION 1.5.0.0 CACHE STRING "")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ---- Cache build vars ----
@@ -45,21 +45,12 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
  )
 endif()
 
-
-if (MSVC)
-  if (NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
-    add_compile_options(
-   /MP	# Build with Multiple Processes
-  )
-  endif ()
-endif ()
-
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
 
 
 # ---- Add source files ----
-
+set(BUILD_TESTS OFF CACHE BOOL "Disable Tests" FORCE)
 add_subdirectory(extern/CommonLibSSE)
 include(CMake/headerlist.cmake)
 include(CMake/sourcelist.cmake)

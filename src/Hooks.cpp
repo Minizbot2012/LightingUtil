@@ -1,10 +1,12 @@
+#include <Hooking.h>
 #include <Config.h>
 #include <Hooks.h>
 namespace MPL::Hooks
 {
-    struct LoadCELL
+    struct InitCell
     {
         using Target = RE::TESObjectCELL;
+        static inline constexpr VariantIndex index = VariantIndex(0x13);
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
@@ -16,13 +18,17 @@ namespace MPL::Hooks
                 MPL::Config::LoadConfigFormID<MPL::Config::Cell::TESObjectCELL>(a_ref);
             }
         }
+        static void post_hook()
+        {
+            logger::info("Installed InitCell Hook");
+        }
         static inline REL::Relocation<decltype(thunk)> func;
-        static inline constexpr std::size_t index{ 0x13 };
     };
 
     struct InitIS
     {
         using Target = RE::TESImageSpace;
+        static inline constexpr VariantIndex index = VariantIndex(0x13);
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
@@ -34,13 +40,17 @@ namespace MPL::Hooks
                 MPL::Config::LoadConfigFormID<MPL::Config::ImageSpace::TESImageSpace>(a_ref);
             }
         }
+        static void post_hook()
+        {
+            logger::info("Installed InitImagespace Hook");
+        }
         static inline REL::Relocation<decltype(thunk)> func;
-        static inline constexpr std::size_t index{ 0x13 };
     };
 
     struct InitObjRef
     {
         using Target = RE::TESObjectREFR;
+        static inline constexpr VariantIndex index = VariantIndex(0x13);
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
@@ -52,13 +62,17 @@ namespace MPL::Hooks
                 MPL::Config::LoadConfigFormID<MPL::Config::TESObjectREFR>(a_ref);
             }
         }
+        static void post_hook()
+        {
+            logger::info("Installed InitObjectRef Hook");
+        }
         static inline REL::Relocation<decltype(thunk)> func;
-        static inline constexpr std::size_t index{ 0x13 };
     };
 
     struct InitTMPL
     {
         using Target = RE::BGSLightingTemplate;
+        static inline constexpr VariantIndex index = VariantIndex(0x13);
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
@@ -70,32 +84,37 @@ namespace MPL::Hooks
                 MPL::Config::LoadConfigFormID<MPL::Config::Template::BGSLightingTemplate>(a_ref);
             }
         }
+        static void post_hook()
+        {
+            logger::info("Installed InitObjectRef Hook");
+        }
         static inline REL::Relocation<decltype(thunk)> func;
-        static inline constexpr std::size_t index{ 0x13 };
     };
 
-    struct InitCell
+    struct CellChange
     {
         using Target = RE::PlayerCharacter;
-        static inline void thunk(const RE::PlayerCharacter* a_ref, const RE::TESObjectCELL* cl)
+        static inline constexpr VariantIndex index = VariantIndex(0x98, 0x98, 0x99);
+        static inline void thunk(RE::PlayerCharacter* a_ref, const RE::TESObjectCELL* cl)
         {
             func(a_ref, cl);
-            if (a_ref != nullptr && a_ref->IsPlayerRef() && cl != nullptr)
+            if (cl != nullptr)
             {
-                logger::info("Cell Change Event Triggered");
                 MPL::Config::StatData::GetSingleton()->cellLoad.QueueEvent(cl);
             }
         }
+        static void post_hook()
+        {
+            logger::info("Installed CellChange Hook");
+        }
         static inline REL::Relocation<decltype(thunk)> func;
-        static inline constexpr std::size_t index{ 0x98 };
-        static inline constexpr std::size_t index_vr{ 0x99 };
     };
     void Install()
     {
-        stl::install_hook<LoadCELL>();
         stl::install_hook<InitCell>();
         stl::install_hook<InitIS>();
         stl::install_hook<InitTMPL>();
         stl::install_hook<InitObjRef>();
+        stl::install_hook<CellChange>();
     }
 }  // namespace MPL::Hooks

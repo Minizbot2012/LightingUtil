@@ -6,7 +6,12 @@
 #include <SKSE/API.h>
 void Serialize(SKSE::SerializationInterface* ser)
 {
-    MPL::Config::StatData::GetSingleton()->cellLoad.Save(ser, 'CLCH', 1);
+    if (!ser->OpenRecord('CLCH', 0x1))
+    {
+        logger::error("Failed to open record");
+        return;
+    }
+    MPL::Config::StatData::GetSingleton()->cellLoad.Save(ser);
 }
 
 void Deserialize(SKSE::SerializationInterface* ser)
@@ -46,10 +51,9 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     return true;
 };
 SKSEPluginInfo(
-    .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
+        .Version = REL::Version{ MPL::Plugin::MAJOR, MPL::Plugin::MINOR, MPL::Plugin::PATCH, 0 },
     .Name = "LumaUtil"sv,
     .Author = "mini"sv,
     .SupportEmail = ""sv,
     .StructCompatibility = SKSE::StructCompatibility::Independent,
-    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary
-)
+    .RuntimeCompatibility = SKSE::VersionIndependence::AddressLibrary)

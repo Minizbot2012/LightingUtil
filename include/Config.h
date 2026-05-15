@@ -1,5 +1,5 @@
 #pragma once
-#include <ClibUtil/editorID.hpp>
+#include <MMSF_API.h>
 #include <Config/Cell.h>
 #include <Config/Common.h>
 #include <Config/ImageSpace.h>
@@ -7,7 +7,6 @@
 #include <Config/Templates.h>
 #include <REX/REX/Singleton.h>
 #include <format>
-#include <memory>
 #include <rfl/json.hpp>
 #include <rfl/json/write.hpp>
 #include <string_view>
@@ -30,6 +29,7 @@ namespace MPL::Config
     public:
         SKSE::RegistrationSet<const RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
         RE::TESRegion* lastRegion;
+        MPL::API::ServiceMap* g_sm = nullptr;
     };
     template <typename T>
         requires Named<T> && Patch<T>
@@ -75,7 +75,7 @@ namespace MPL::Config
 
                     else
                     {
-                        logger::info("Error {} {}", clib_util::editorID::get_editorID(form), pch.error().what());
+                        logger::info("Error {:08X} {}", form->GetFormID(), pch.error().what());
                     }
                 }
             }
