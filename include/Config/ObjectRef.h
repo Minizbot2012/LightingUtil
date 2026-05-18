@@ -7,6 +7,7 @@ namespace MPL::Config
     {
         std::optional<MPL::Config::LiteForm> imageSpace;
         std::optional<MPL::Config::LiteForm> lightingTemplate;
+        std::optional<bool> addIfMissing;
         using TopLevel = RE::TESObjectREFR;
         using Patch = RE::ExtraRoomRefData;
         void Apply(Patch* itm)
@@ -21,9 +22,9 @@ namespace MPL::Config
             if (itm->data->lightingTemplate) cpy.lightingTemplate = MPL::Config::LiteForm::FromID(cpy.imageSpace->formID);
             return cpy;
         }
-        static bool IsValid(TopLevel* itm)
+        bool IsValid(TopLevel* itm)
         {
-            return itm->data.objectReference->formID == 0x15;
+            return (itm->extraList.HasType<RE::ExtraRoomRefData>() || *this->addIfMissing) && itm->GetBaseObject()->formID == 0x1F;
         }
     };
 
@@ -35,18 +36,18 @@ namespace MPL::Config
         using Patch = RE::TESObjectREFR;
         void Apply(Patch* itm)
         {
-            if (ExtraRoomRefData::IsValid(itm))
+            if (this->roomBound)
             {
-                if (this->roomBound)
+                if (this->roomBound->IsValid(itm))
                 {
                     if (itm->extraList.HasType<RE::ExtraRoomRefData>())
                     {
                         auto rrd = itm->extraList.GetByType<RE::ExtraRoomRefData>();
                         this->roomBound->Apply(rrd);
                     }
-                    else
+                    else if(*this->roomBound->addIfMissing)
                     {
-                        auto erd = RE::ExtraRoomRefData::Create<RE::ExtraRoomRefData>();
+                        auto erd = RE::BSExtraData::Create<RE::ExtraRoomRefData>();
                         this->roomBound->Apply(erd);
                         itm->extraList.Add(erd);
                     }
@@ -56,15 +57,11 @@ namespace MPL::Config
         static TESObjectREFR From(Patch* itm)
         {
             TESObjectREFR cpy;
-            if (ExtraRoomRefData::IsValid(itm) && itm->extraList.HasType<RE::ExtraRoomRefData>())
+            if (itm->extraList.HasType<RE::ExtraRoomRefData>())
             {
                 cpy.roomBound = ExtraRoomRefData::From(itm->extraList.GetByType<RE::ExtraRoomRefData>());
             }
             return cpy;
-        }
-        static bool IsValid(Patch* itm)
-        {
-            return itm->data.objectReference != nullptr && (ExtraRoomRefData::IsValid(itm));
         }
     };
 }  // namespace MPL::Config

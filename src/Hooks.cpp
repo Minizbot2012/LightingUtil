@@ -54,7 +54,7 @@ namespace MPL::Hooks
         static inline void thunk(Target* a_ref)
         {
             func(a_ref);
-            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && Config::TESObjectREFR::IsValid(a_ref))
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
             {
 #ifndef NDEBUG
                 logger::info("Loading ObjRef {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
