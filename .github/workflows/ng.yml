@@ -32,7 +32,7 @@ jobs:
       - name: Build
         run: cmake --build --preset ${{env.PRESET}}
       - name: Archive
-        run: 7z a ${{ env.PROJECT_NAME }}-AE.zip ./buildae/release/*.*
+        run: 7z a ${{ env.PROJECT_NAME }}-AE.zip ./build/release/*.*
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
