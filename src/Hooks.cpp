@@ -47,7 +47,7 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
-    struct InitObjRef
+    struct InitREFR
     {
         using Target = RE::TESObjectREFR;
         static inline constexpr VariantIndex index = VariantIndex(0x13);
@@ -64,7 +64,7 @@ namespace MPL::Hooks
         }
         static void post_hook()
         {
-            logger::info("Installed InitObjectRef Hook");
+            logger::info("Installed InitREFR Hook");
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
@@ -135,8 +135,9 @@ namespace MPL::Hooks
     {
         stl::install_hook<InitCell>();
         stl::install_hook<InitIS>();
+        stl::install_hook<InitREFR>();
         stl::install_hook<InitTMPL>();
-        stl::install_hook<InitObjRef>();
+        stl::install_hook<InitLGHT>();
         stl::install_hook<CellChange>();
     }
 }  // namespace MPL::Hooks
