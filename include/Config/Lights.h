@@ -87,7 +87,7 @@ namespace MPL::Config
             if (fallofExponent) itm->fallofExponent = *fallofExponent;
             if (fov) itm->fov = *fov;
             if (nearDistance) itm->nearDistance = *nearDistance;
-            if (flickerPeriodRecip) itm->flickerPeriodRecip = *flickerPeriodRecip;
+            if (flickerPeriodRecip) itm->flickerPeriodRecip = *flickerPeriodRecip * 100;
             if (flickerIntensityAmplitude) itm->flickerIntensityAmplitude = *flickerIntensityAmplitude;
             if (flickerMovementAmplitude) itm->flickerMovementAmplitude = *flickerMovementAmplitude;
         }
@@ -101,7 +101,7 @@ namespace MPL::Config
             cpy.fallofExponent = itm->fallofExponent;
             cpy.fov = itm->fov;
             cpy.nearDistance = itm->nearDistance;
-            cpy.flickerPeriodRecip = itm->flickerPeriodRecip;
+            cpy.flickerPeriodRecip = itm->flickerPeriodRecip / 100;
             cpy.flickerIntensityAmplitude = itm->flickerIntensityAmplitude;
             cpy.flickerMovementAmplitude = itm->flickerMovementAmplitude;
             return cpy;
