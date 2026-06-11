@@ -2,6 +2,7 @@
 #include <MMSF_API.h>
 #include <Config/Cell.h>
 #include <Config/Common.h>
+#include <Config/Lights.h>
 #include <Config/ImageSpace.h>
 #include <Config/ObjectRef.h>
 #include <Config/Templates.h>

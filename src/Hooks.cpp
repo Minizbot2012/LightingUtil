@@ -86,7 +86,29 @@ namespace MPL::Hooks
         }
         static void post_hook()
         {
-            logger::info("Installed InitObjectRef Hook");
+            logger::info("Installed InitTempl Hook");
+        }
+        static inline REL::Relocation<decltype(thunk)> func;
+    };
+
+    struct InitLGHT
+    {
+        using Target = RE::TESObjectLIGH;
+        static inline constexpr VariantIndex index = VariantIndex(0x13);
+        static inline void thunk(Target* a_ref)
+        {
+            func(a_ref);
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr)
+            {
+#ifndef NDEBUG
+                logger::info("Loading Light {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
+#endif
+                MPL::Config::LoadConfigFormID<MPL::Config::TESObjectLIGH>(a_ref);
+            }
+        }
+        static void post_hook()
+        {
+            logger::info("Installed InitLGHT Hook");
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };

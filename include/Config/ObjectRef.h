@@ -5,10 +5,10 @@ namespace MPL::Config
 {
     struct ExtraRoomRefData
     {
+        using TopLevel = RE::TESObjectREFR;
         std::optional<MPL::Config::LiteForm> imageSpace;
         std::optional<MPL::Config::LiteForm> lightingTemplate;
         std::optional<bool> addIfMissing;
-        using TopLevel = RE::TESObjectREFR;
         using Patch = RE::ExtraRoomRefData;
         void Apply(Patch* itm)
         {
