@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <format>
 
 #define ByteAt(addr) *reinterpret_cast<std::uint8_t*>(addr)
 
@@ -66,7 +67,7 @@ concept hook = requires {
 };
 
 template <typename Hook>
-concept CInstall = hook<Hook> && requires {
+concept custom_install = hook<Hook> && requires {
     { Hook::install };
 };
 
@@ -106,6 +107,11 @@ template <typename Hook>
 concept vtable_hook = hook<Hook> && requires {
     { Hook::index } -> std::convertible_to<VariantIndex>;
     requires(has_vtable<typename Hook::Target>);
+};
+
+template <typename Hook>
+concept offset_vtable_hook = hook<Hook> && vtable_hook<Hook> && requires {
+    { Hook::offset } -> std::convertible_to<REL::VariantOffset>;
 };
 
 /// Allows to provide a custom vtable index for a vtable hook.
@@ -232,10 +238,26 @@ namespace stl
         }
     }
 
-    template <CInstall Hook>
-    void custom_install()
+    template <class Hook>
+    void write_offset_vtable()
     {
-        Hook::install();
+        auto vtable = 0;
+        if constexpr (custom_vtable_index<Hook>)
+        {
+            vtable = Hook::vtable;
+        }
+        REL::Relocation<uintptr_t> vtbl{ Hook::Target::VTABLE[vtable] };
+        auto func = reinterpret_cast<std::uintptr_t*>(vtbl.address())[Hook::index.index()];
+        auto callSite = func + Hook::offset.offset();
+        logger::info("Using VTable workaround, function address: 0x{:X}", func);
+        if (auto opcode = *reinterpret_cast<std::uint8_t*>(callSite); opcode != 0xE8)
+        {
+            stl::report_and_fail(std::format(
+                "Expected a CALL (0xE8) at {:X} for offset but found {:X};\ncrashing to avoid corrupting code. The call-site offset may have \nchanged in this game version.",
+                callSite, opcode));
+            return;
+        }
+        stl::write_thunk_call<Hook>(callSite);
     }
 
     /// Installs given hook
@@ -256,9 +278,13 @@ namespace stl
         {
             Hook::pre_hook();
         }
-        if constexpr (CInstall<Hook>)
+        if constexpr (custom_install<Hook>)
         {
-            custom_install<Hook>();
+            Hook::install();
+        }
+        else if constexpr (offset_vtable_hook<Hook>)
+        {
+            stl::write_offset_vtable<Hook>();
         }
         else if constexpr (call_hook<Hook>)
         {
