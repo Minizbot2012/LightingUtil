@@ -249,12 +249,10 @@ namespace stl
         REL::Relocation<uintptr_t> vtbl{ Hook::Target::VTABLE[vtable] };
         auto func = reinterpret_cast<std::uintptr_t*>(vtbl.address())[Hook::index.index()];
         auto callSite = func + Hook::offset.offset();
-        logger::info("Using VTable workaround, function address: 0x{:X}", func);
+        logger::info("Function address: 0x{:X}", func);
         if (auto opcode = *reinterpret_cast<std::uint8_t*>(callSite); opcode != 0xE8)
         {
-            stl::report_and_fail(std::format(
-                "Expected a CALL (0xE8) at {:X} for offset but found {:X};\ncrashing to avoid corrupting code. The call-site offset may have \nchanged in this game version.",
-                callSite, opcode));
+            stl::report_and_fail(std::format("Expected a CALL (0xE8) at {:X} for offset but found {:X};\ncrashing to avoid corrupting code. The call-site offset may have \nchanged in this game version.", callSite, opcode));
             return;
         }
         stl::write_thunk_call<Hook>(callSite);

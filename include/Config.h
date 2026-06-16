@@ -61,17 +61,7 @@ namespace MPL::Config
                     auto pch = rfl::json::read<T>(contents);
                     if (pch.has_value())
                     {
-#ifndef NDEBUG
-                        auto jso = rfl::json::write(*pch);
-                        auto old = rfl::json::write(T::From(form));
-                        logger::info("New: {}", jso);
-                        logger::info("Old: {}", old);
-#endif
                         pch->Apply(form);
-#ifndef NDEBUG
-                        auto post = rfl::json::write(T::From(form));
-                        logger::info("Post: {}", post);
-#endif
                     }
 
                     else

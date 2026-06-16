@@ -1,5 +1,4 @@
 #pragma once
-#include "RE/T/TESRegion.h"
 #include <Config.h>
 #include <MMSF_API.h>
 
@@ -61,7 +60,9 @@ namespace MPL::Papyrus
                 if (skr != nullptr)
                 {
                     dat->skyRegion = skr;
+#ifndef NDEBUG
                     logger::info("{:X}:{}", dat->skyRegion->GetLocalFormID(), dat->skyRegion->sourceFiles.array->front()->GetFilename());
+#endif
                 }
                 else
                 {
