@@ -30,7 +30,7 @@ jobs:
       - name: Configure CMake
         run: cmake --preset ${{env.PRESET}}
       - name: Build
-        run: cmake --build --preset ${{env.PRESET}}
+        run: cmake --build --preset ${{env.PRESET}} --config Release
       - name: Archive
         run: 7z a ${{ env.PROJECT_NAME }}-AE.zip ./build/release/*.*
       - name: Upload a Build Artifact
