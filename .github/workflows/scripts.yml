@@ -24,7 +24,7 @@ jobs:
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "Skyrim Scripts"
+          name: "Skyrim NG"
           path: |
             ./scripts/**
       - name: Create & Upload Release

@@ -84,13 +84,13 @@ concept chain_hook = requires {
 /// addresses.
 template <typename Hook>
 concept call_hook = hook<Hook> && requires {
-    { Hook::relocation } -> std::convertible_to<REL::RelocationID>;
+    { Hook::relocation } -> std::convertible_to<REL::VariantID>;
     { Hook::offset } -> std::convertible_to<REL::VariantOffset>;
 };
 
 template <typename Hook>
 concept addr_hook = hook<Hook> && requires {
-    { Hook::addr } -> std::convertible_to<REL::RelocationID>;
+    { Hook::addr } -> std::convertible_to<REL::VariantID>;
 };
 
 /// A type that has a vtable to hook into.
@@ -172,7 +172,7 @@ namespace stl
     {
         auto res = *reinterpret_cast<uintptr_t*>(Hook::addr.address());
         details::set_func<Hook>(res);
-        Hook::addr.write(reinterpret_cast<uintptr_t>(&Hook::thunk));
+        REL::safe_write(Hook::addr.address(), reinterpret_cast<uintptr_t>(&Hook::thunk));
     }
 
     template <vtable_hook Hook>
