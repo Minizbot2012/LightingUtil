@@ -101,77 +101,78 @@ namespace MPL::Papyrus
 
     //REGION: EmittanceUtil
 
-    // If the ref's emittance source is a Region (the standard "interior
-    // weather" hookup), the region's cached emittanceColor lags one weather
-    // behind on ForceWeather. Copy the live value out of
-    // Sky::skyColor[kEffectLighting] (slot 9 — the engine's per-weather
-    // "emittance" color, which CommonLib happens to expose under the name
-    // kEffectLighting) so UpdateRefLight() picks up the new color.
-    static void PatchRegionFromSky(RE::ExtraEmittanceSource* a_extra, RE::Sky* a_sky)
-    {
-        if (!a_extra || !a_sky)
-        {
-            return;
-        }
-        auto* source = a_extra->source;
-        if (!source || !source->Is(RE::FormType::Region))
-        {
-            return;
-        }
-        auto* region = static_cast<RE::TESRegion*>(source);
-        region->emittanceColor = a_sky->skyColor[RE::TESWeather::ColorTypes::kEffectLighting];
-        region->currentWeather = a_sky->currentWeather;
-    }
-
-    // Calls TESObjectREFR::UpdateRefLight() on every loaded reference in the
-    // cell that carries an ExtraEmittanceSource. That is the engine routine
-    // which re-reads the emittance source's current effect color and pushes
-    // it into the ref's 3D (light bulbs, window statics with an emittance
-    // link, etc.).
+    // Re-runs the engine's per-region weather update, exactly like a natural
+    // Weather.SetActive / weather transition, and then pushes the result into
+    // the reference's loaded 3D.
     //
-    // The engine normally only fans this out during a real weather transition
-    // tick, so forced/instant weather changes leave emittances stale.
-    inline void RefreshCellEmittances(RE::StaticFunctionTag*, RE::TESObjectCELL* a_cell)
+    // Each emittance-driven reference stores its source in ExtraEmittanceSource.
+    // When that source is a Region (e.g. a custom "all weathers" emittance
+    // region), the engine keeps a cached emittanceColor on the region that it
+    // refreshes during a weather transition tick via TESRegion::SetCurrentWeather.
+    // Forced/instant weather changes skip that tick, leaving emittances stale.
+    // Calling SetCurrentWeather(currentWeather) here reproduces the engine's own
+    // update; UpdateRefLight() then re-reads it into the ref's 3D.
+    //
+    // Emittance sources that are NOT regions (e.g. a linked light) are left
+    // untouched — they do not follow the weather.
+    static bool RefreshEmittanceRef(RE::TESObjectREFR* a_ref, RE::Sky* a_sky,
+        std::unordered_set<RE::TESRegion*>& a_updatedRegions)
     {
-        if (!a_cell)
+        if (!a_ref || !a_ref->Is3DLoaded() || !a_sky || !a_sky->currentWeather)
         {
-            return;
+            return false;
         }
-
-        auto* sky = RE::Sky::GetSingleton();
-        std::uint32_t refreshed = 0;
-
-        a_cell->ForEachReference([&](RE::TESObjectREFR* a_ref)
-            {
-            if (!a_ref || !a_ref->Is3DLoaded()) {
-                return RE::BSContainer::ForEachResult::kContinue;
-            }
-            auto* extra = a_ref->extraList.GetByType<RE::ExtraEmittanceSource>();
-            if (!extra) {
-                return RE::BSContainer::ForEachResult::kContinue;
-            }
-            PatchRegionFromSky(extra, sky);
-            a_ref->UpdateRefLight();
-            ++refreshed;
-            return RE::BSContainer::ForEachResult::kContinue; });
-
-        logger::info("RefreshCellEmittances: cell {:08X} refreshed={}",
-            a_cell->GetFormID(), refreshed);
-    }
-
-    // Single-ref variant for callers that already know the specific reference
-    // they want to refresh (e.g. a window static added at runtime).
-    inline void RefreshRefEmittance(RE::StaticFunctionTag*, RE::TESObjectREFR* a_ref)
-    {
-        if (!a_ref || !a_ref->Is3DLoaded())
+        auto* extra = a_ref->extraList.GetByType<RE::ExtraEmittanceSource>();
+        if (!extra || !extra->source || !extra->source->Is(RE::FormType::Region))
         {
-            return;
+            return false;
         }
-        if (auto* extra = a_ref->extraList.GetByType<RE::ExtraEmittanceSource>())
+        auto* region = static_cast<RE::TESRegion*>(extra->source);
+        // Run the engine's weather update once per region, then refresh the 3D.
+        if (a_updatedRegions.insert(region).second)
         {
-            PatchRegionFromSky(extra, RE::Sky::GetSingleton());
+            region->SetCurrentWeather(a_sky->currentWeather);
         }
         a_ref->UpdateRefLight();
+        return true;
+    }
+
+    // Fan the current weather's emittance out to every loaded reference,
+    // replicating the per-ref update that a natural weather transition
+    // performs across the whole loaded area (not just a single cell).
+    inline std::uint32_t RefreshLoadedEmittances(RE::Sky* a_sky)
+    {
+        auto* tes = RE::TES::GetSingleton();
+        if (!tes || !a_sky || !a_sky->currentWeather)
+        {
+            return 0;
+        }
+        std::unordered_set<RE::TESRegion*> updatedRegions;
+        std::uint32_t refreshed = 0;
+        tes->ForEachReference([&](RE::TESObjectREFR* a_ref)
+            {
+            if (RefreshEmittanceRef(a_ref, a_sky, updatedRegions)) {
+                ++refreshed;
+            }
+            return RE::BSContainer::ForEachResult::kContinue; });
+        return refreshed;
+    }
+
+    // "Instant SetActive": applies the weather instantly like ForceActive
+    // (Sky::ForceWeather), then performs the emittance fan-out that ForceActive
+    // skips but SetActive does over its transition. The net effect is a weather
+    // change that is instant AND leaves no stale emittances behind.
+    inline void SetWeatherInstant(RE::StaticFunctionTag*, RE::TESWeather* a_weather, bool a_override)
+    {
+        auto* sky = RE::Sky::GetSingleton();
+        if (!sky || !a_weather)
+        {
+            return;
+        }
+        sky->ForceWeather(a_weather, a_override);
+        auto refreshed = RefreshLoadedEmittances(sky);
+        logger::info("SetWeatherInstant: weather {:08X} override={} emittancesRefreshed={}",
+            a_weather->GetFormID(), a_override, refreshed);
     }
 
     //END REGION: EMITTANCEUTIL
@@ -184,8 +185,7 @@ namespace MPL::Papyrus
         vm->RegisterFunction("RegisterForCellloadRef", "CLUtil", RegisterForOnCellLoadAlias);
         vm->RegisterFunction("RegisterForCellloadMgef", "CLUtil", RegisterForOnCellLoadMgef);
         //BEGIN REGION: Emittance Util VM REGISTER
-        vm->RegisterFunction("RefreshCellEmittances", "EmittanceUtil", RefreshCellEmittances);
-        vm->RegisterFunction("RefreshRefEmittance", "EmittanceUtil", RefreshRefEmittance);
+        vm->RegisterFunction("SetWeatherInstant", "EmittanceUtil", SetWeatherInstant);
         //END REGION: Emittance Util VM REGISTER
         return true;
     }
