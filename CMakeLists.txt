@@ -91,14 +91,12 @@ target_include_directories(
 )
 
 find_package(reflectcpp CONFIG REQUIRED)
-find_package(xxHash CONFIG REQUIRED)
 
 target_link_libraries(
  ${PROJECT_NAME}
  PRIVATE
   CommonLibSSE::CommonLibSSE
   reflectcpp::reflectcpp
-  xxHash::xxhash
 )
 
 target_precompile_headers(
