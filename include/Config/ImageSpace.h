@@ -69,7 +69,7 @@ namespace MPL::Config::ImageSpace
     struct Tint
     {
         std::optional<float> amount;
-        std::optional<ColorF> color;
+        std::optional<NiColor> color;
         using Patch = RE::ImageSpaceBaseData::Tint;
         void Apply(Patch* itm)
         {
@@ -80,7 +80,7 @@ namespace MPL::Config::ImageSpace
         {
             Tint cpy{
                 .amount = itm->amount,
-                .color = ColorF::From(&itm->color),
+                .color = NiColor::From(&itm->color),
             };
             return cpy;
         }

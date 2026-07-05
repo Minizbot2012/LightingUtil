@@ -1,15 +1,18 @@
 #pragma once
-#include <MMSF_API.h>
 #include <Config/Cell.h>
 #include <Config/Common.h>
-#include <Config/Lights.h>
 #include <Config/ImageSpace.h>
+#include <Config/Lights.h>
 #include <Config/ObjectRef.h>
 #include <Config/Templates.h>
+#include <MMSF_API.h>
 #include <REX/REX/Singleton.h>
+#include <filesystem>
 #include <format>
 #include <rfl/json.hpp>
+#include <rfl/json/load.hpp>
 #include <rfl/json/write.hpp>
+#include <string>
 #include <string_view>
 #include <vector>
 namespace MPL::Config
@@ -29,6 +32,7 @@ namespace MPL::Config
     {
     public:
         SKSE::RegistrationSet<const RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
+        std::unordered_map<std::string, bool> folder_map;
         RE::TESRegion* lastRegion;
         MPL::API::ServiceMap* g_sm = nullptr;
     };
@@ -36,6 +40,7 @@ namespace MPL::Config
         requires Named<T> && Patch<T>
     void LoadConfigFormID(typename T::Patch* form)
     {
+        auto stat = StatData::GetSingleton();
         static std::vector<std::string> valid_files = RE::TESDataHandler::GetSingleton()->files |
                                                       std::views::filter([](RE::TESFile* file)
                                                           {
@@ -46,28 +51,30 @@ namespace MPL::Config
                                                       std::ranges::to<std::vector>();
         for (auto local_file : valid_files)
         {
-            auto file_name = std::format("Luma/{}/{}/{}/{:06X}.json", T::Name, local_file, form->GetFile(0)->GetFilename(), form->GetLocalFormID());
-            RE::BSResourceNiBinaryStream fileStream(file_name);
-            if (fileStream.good())
+            auto folder_name = std::format("Data/Luma/{}/{}/{}", T::Name, local_file, form->GetFile(0)->GetFilename());
+            if (stat->folder_map.contains(folder_name) && !stat->folder_map[folder_name])
             {
-                if (fileStream.stream->totalSize > 0)
+                continue;
+            }
+            if (!stat->folder_map.contains(folder_name))
+            {
+                if (std::filesystem::exists(folder_name))
                 {
-#ifndef NDEBUG
-                    logger::info("Loading file {}", file_name);
-#endif
-                    std::string contents;
-                    contents.resize(fileStream.stream->totalSize);
-                    fileStream.read(contents.data(), fileStream.stream->totalSize);
-                    auto pch = rfl::json::read<T>(contents);
-                    if (pch.has_value())
-                    {
-                        pch->Apply(form);
-                    }
-
-                    else
-                    {
-                        logger::info("Error {:08X} {}", form->GetFormID(), pch.error().what());
-                    }
+                    stat->folder_map[folder_name] = true;
+                }
+                else
+                {
+                    stat->folder_map[folder_name] = false;
+                    continue;
+                }
+            }
+            auto file_name = std::format("{}/{:06X}.json", folder_name, form->GetLocalFormID());
+            if (std::filesystem::exists(file_name))
+            {
+                auto pch = rfl::json::load<T>(file_name);
+                if (pch.has_value())
+                {
+                    pch->Apply(form);
                 }
             }
         }
