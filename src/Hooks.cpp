@@ -113,6 +113,28 @@ namespace MPL::Hooks
         static inline REL::Relocation<decltype(thunk)> func;
     };
 
+    struct InitWorldspace
+    {
+        using Target = RE::TESWorldSpace;
+        static inline constexpr VariantIndex index = VariantIndex(0x13);
+        static inline void thunk(Target* a_ref)
+        {
+            func(a_ref);
+            if (a_ref != nullptr && a_ref->sourceFiles.array != nullptr && !a_ref->sourceFiles.array->empty())
+            {
+#ifndef NDEBUG
+                logger::info("Loading WorldSpace {:06X}:{}", a_ref->GetLocalFormID(), a_ref->GetFile(0)->GetFilename());
+#endif
+                Config::LoadConfigFormID<MPL::Config::Worldspace::TESWorldSpace>(a_ref);
+            }
+        }
+        static void post_hook()
+        {
+            logger::info("Installed InitWorldspace Hook");
+        }
+        static inline REL::Relocation<decltype(thunk)> func;
+    };
+
     struct CellChange
     {
         using Target = RE::PlayerCharacter;
@@ -138,6 +160,7 @@ namespace MPL::Hooks
         stl::install_hook<InitREFR>();
         stl::install_hook<InitTMPL>();
         stl::install_hook<InitLGHT>();
+        stl::install_hook<InitWorldspace>();
         stl::install_hook<CellChange>();
     }
 }  // namespace MPL::Hooks

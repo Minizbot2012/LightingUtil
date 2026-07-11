@@ -5,13 +5,9 @@
 #include <Config/Lights.h>
 #include <Config/ObjectRef.h>
 #include <Config/Templates.h>
+#include <Config/Worldspace.h>
 #include <MMSF_API.h>
-#include <REX/REX/Singleton.h>
-#include <filesystem>
 #include <format>
-#include <rfl/json.hpp>
-#include <rfl/json/load.hpp>
-#include <rfl/json/write.hpp>
 #include <string>
 #include <string_view>
 #include <vector>

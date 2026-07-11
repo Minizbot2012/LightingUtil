@@ -9,6 +9,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/fmt/bin_to_hex.h>
 #include <windows.h>
+#include <rfl/json.hpp>
 // clang-format on
 #define DLLEXPORT __declspec(dllexport)
 namespace logger = SKSE::log;
