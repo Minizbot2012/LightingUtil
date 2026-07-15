@@ -22,23 +22,21 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
-      - name: Update VCPKG
-        run: |
-          cd ${{ env.VCPKG_INSTALLATION_ROOT }}
-          bootstrap-vcpkg.bat -disableMetrics
-          vcpkg integrate install
-      - name: Configure CMake
-        run: cmake --preset ${{env.PRESET}}
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+        with:
+          xmake-version: latest
       - name: Build
-        run: cmake --build --preset ${{env.PRESET}} --config Release
+        run: xmake -y
       - name: Archive
-        run: 7z a ${{ env.PROJECT_NAME }}.zip ./build/release/*.*
+        run: 7z a -tzip ${{ env.PROJECT_NAME }}.zip ./build/windows/x64/release/LumaUtil.dll ./build/windows/x64/release/LumaUtil.pdb
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "Skyrim NG"
+          name: Skyrim
           path: |
-            ./build/release/*.*
+            ./build/windows/x64/release/LumaUtil.dll
+            ./build/windows/x64/release/LumaUtil.pdb
       - name: Create & Upload Release
         id: upload-release
         uses: softprops/action-gh-release@v2
