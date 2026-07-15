@@ -1,7 +1,7 @@
 #pragma once
 #include <Config.h>
 #include <MMSF_API.h>
-
+#include <WeatherPatcher.h>
 namespace MPL::Papyrus
 {
     inline std::string GetRegion(RE::StaticFunctionTag*, RE::TESObjectCELL* cl)
@@ -9,9 +9,9 @@ namespace MPL::Papyrus
         if (cl != nullptr)
         {
             auto sta = MPL::Config::StatData::GetSingleton();
-            if (sta->g_sm == nullptr)
+            if (sta->mmsfAPI == nullptr)
             {
-                sta->g_sm = MPL::API::RequestMMSFAPI();
+                sta->mmsfAPI = MPL::API::RequestMMSFAPI();
             }
             if (cl->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
@@ -21,7 +21,7 @@ namespace MPL::Papyrus
 #ifndef NDEBUG
                     logger::info("{:X}:{}", dat->skyRegion->GetLocalFormID(), dat->skyRegion->sourceFiles.array->front()->GetFilename());
 #endif
-                    return sta->g_sm->LookupEDIDForFormID(dat->skyRegion->formID);
+                    return sta->mmsfAPI->LookupEDIDForFormID(dat->skyRegion->formID);
                 }
             }
             if (cl->IsExteriorCell())
@@ -33,11 +33,11 @@ namespace MPL::Papyrus
                     logger::info("{:X}:{}", sky->region->GetLocalFormID(), sky->region->sourceFiles.array->front()->GetFilename());
 #endif
                     sta->lastRegion = sky->region;
-                    return sta->g_sm->LookupEDIDForFormID(sky->region->formID);
+                    return sta->mmsfAPI->LookupEDIDForFormID(sky->region->formID);
                 }
                 else if (sta->lastRegion)
                 {
-                    return sta->g_sm->LookupEDIDForFormID(sta->lastRegion->formID);
+                    return sta->mmsfAPI->LookupEDIDForFormID(sta->lastRegion->formID);
                 }
             }
         }
@@ -49,14 +49,14 @@ namespace MPL::Papyrus
         if (cl != nullptr && !region.empty())
         {
             auto sta = MPL::Config::StatData::GetSingleton();
-            if (sta->g_sm == nullptr)
+            if (sta->mmsfAPI == nullptr)
             {
-                sta->g_sm = MPL::API::RequestMMSFAPI();
+                sta->mmsfAPI = MPL::API::RequestMMSFAPI();
             }
             if (cl->extraList.HasType<RE::ExtraCellSkyRegion>())
             {
                 auto dat = cl->extraList.GetByType<RE::ExtraCellSkyRegion>();
-                auto skr = sta->g_sm->LookupCachedForm(region)->As<RE::TESRegion>();
+                auto skr = sta->mmsfAPI->LookupCachedForm(region)->As<RE::TESRegion>();
                 if (skr != nullptr)
                 {
                     dat->skyRegion = skr;
@@ -71,7 +71,7 @@ namespace MPL::Papyrus
             }
             else
             {
-                auto skr = sta->g_sm->LookupCachedForm(region)->As<RE::TESRegion>();
+                auto skr = sta->mmsfAPI->LookupCachedForm(region)->As<RE::TESRegion>();
                 if (skr != nullptr)
                 {
                     auto dat = RE::BSExtraData::Create<RE::ExtraCellSkyRegion>();
@@ -189,4 +189,101 @@ namespace MPL::Papyrus
         //END REGION: Emittance Util VM REGISTER
         return true;
     }
+
+    //REGION: Weather Patcher VM REGISTER
+    inline float GetAmbientMultiplier(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		return WeatherPatcher::GetAmbientMultiplier(a_pluginName);
+	}
+
+	inline void SetAmbientMultiplier(RE::StaticFunctionTag*, std::string a_pluginName, float a_value)
+	{
+		WeatherPatcher::SetAmbientMultiplier(a_pluginName, a_value);
+	}
+
+	inline float GetSunlightMultiplier(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		return WeatherPatcher::GetSunlightMultiplier(a_pluginName);
+	}
+
+	inline void SetSunlightMultiplier(RE::StaticFunctionTag*, std::string a_pluginName, float a_value)
+	{
+		WeatherPatcher::SetSunlightMultiplier(a_pluginName, a_value);
+	}
+
+	inline float GetAmbientCompression(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		return WeatherPatcher::GetAmbientCompression(a_pluginName);
+	}
+
+	inline void SetAmbientCompression(RE::StaticFunctionTag*, std::string a_pluginName, float a_value)
+	{
+		WeatherPatcher::SetAmbientCompression(a_pluginName, a_value);
+	}
+
+	inline float GetSunlightCompression(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		return WeatherPatcher::GetSunlightCompression(a_pluginName);
+	}
+
+	inline void SetSunlightCompression(RE::StaticFunctionTag*, std::string a_pluginName, float a_value)
+	{
+		WeatherPatcher::SetSunlightCompression(a_pluginName, a_value);
+	}
+
+	inline float GetMoonlightSaturationMultiplier(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		return WeatherPatcher::GetMoonlightSaturationMultiplier(a_pluginName);
+	}
+
+	inline void SetMoonlightSaturationMultiplier(RE::StaticFunctionTag*, std::string a_pluginName, float a_value)
+	{
+		WeatherPatcher::SetMoonlightSaturationMultiplier(a_pluginName, a_value);
+	}
+
+	inline void ApplySettings(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		WeatherPatcher::ApplySettings(a_pluginName);
+	}
+
+	inline void SaveSettings(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		WeatherPatcher::SaveSettings(a_pluginName);
+	}
+
+	inline bool ResetSettingsToDefault(RE::StaticFunctionTag*, std::string a_pluginName)
+	{
+		return WeatherPatcher::ResetSettingsToDefault(a_pluginName);
+	}
+
+	inline std::vector<std::string> GetPresets(RE::StaticFunctionTag*, std::string a_pluginName, int a_type)
+	{
+		return WeatherPatcher::GetPresets(a_pluginName, WeatherPatcher::IntToPresetType(a_type));
+	}
+
+	inline void LoadPreset(RE::StaticFunctionTag*, std::string a_pluginName, int a_type, std::string a_presetName)
+	{
+		WeatherPatcher::LoadPreset(a_pluginName, WeatherPatcher::IntToPresetType(a_type), a_presetName);
+	}
+
+	inline bool BindWeatherPatcher(RE::BSScript::IVirtualMachine* a_vm)
+	{
+		a_vm->RegisterFunction("GetAmbientMultiplier", "WeatherUtil", GetAmbientMultiplier);
+		a_vm->RegisterFunction("SetAmbientMultiplier", "WeatherUtil", SetAmbientMultiplier);
+		a_vm->RegisterFunction("GetSunlightMultiplier", "WeatherUtil", GetSunlightMultiplier);
+		a_vm->RegisterFunction("SetSunlightMultiplier", "WeatherUtil", SetSunlightMultiplier);
+		a_vm->RegisterFunction("GetAmbientCompression", "WeatherUtil", GetAmbientCompression);
+		a_vm->RegisterFunction("SetAmbientCompression", "WeatherUtil", SetAmbientCompression);
+		a_vm->RegisterFunction("GetSunlightCompression", "WeatherUtil", GetSunlightCompression);
+		a_vm->RegisterFunction("SetSunlightCompression", "WeatherUtil", SetSunlightCompression);
+		a_vm->RegisterFunction("GetMoonlightSaturationMultiplier", "WeatherUtil", GetMoonlightSaturationMultiplier);
+		a_vm->RegisterFunction("SetMoonlightSaturationMultiplier", "WeatherUtil", SetMoonlightSaturationMultiplier);
+		a_vm->RegisterFunction("ApplySettings", "WeatherUtil", ApplySettings);
+		a_vm->RegisterFunction("SaveSettings", "WeatherUtil", SaveSettings);
+		a_vm->RegisterFunction("ResetSettingsToDefault", "WeatherUtil", ResetSettingsToDefault);
+		a_vm->RegisterFunction("GetPresets", "WeatherUtil", GetPresets);
+		a_vm->RegisterFunction("LoadPreset", "WeatherUtil", LoadPreset);
+		return true;
+	}
+	// END REGION: Weather Patcher VM REGISTER
 }  // namespace MPL::Papyrus

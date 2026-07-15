@@ -5,12 +5,15 @@
 #include <Config/Lights.h>
 #include <Config/ObjectRef.h>
 #include <Config/Templates.h>
+#include <Config/Weathers.h>
 #include <Config/Worldspace.h>
 #include <MMSF_API.h>
+#include <filesystem>
 #include <format>
 #include <string>
 #include <string_view>
 #include <vector>
+
 namespace MPL::Config
 {
     template <typename T>
@@ -28,9 +31,11 @@ namespace MPL::Config
     {
     public:
         SKSE::RegistrationSet<const RE::TESObjectCELL*> cellLoad{ "OnCellChange"sv };
-        std::unordered_map<std::string, bool> folder_map;
+        std::unordered_map<std::filesystem::path, bool> folder_map;
         RE::TESRegion* lastRegion;
-        MPL::API::ServiceMap* g_sm = nullptr;
+        MPL::API::ServiceMap* mmsfAPI = nullptr;
+        std::unordered_map<RE::TESWeather*, MPL::WeatherPatcher::WeatherBaseline> weatherBaselines;
+        std::unordered_map<std::string, MPL::WeatherPatcher::Settings> settingsCache;
     };
     template <typename T>
         requires Named<T> && Patch<T>
@@ -47,7 +52,7 @@ namespace MPL::Config
                                                       std::ranges::to<std::vector>();
         for (auto local_file : valid_files)
         {
-            auto folder_name = std::format("Data/Luma/{}/{}/{}", T::Name, local_file, form->GetFile(0)->GetFilename());
+            std::filesystem::path folder_name = std::filesystem::current_path() / "Data" / "Luma" / T::Name / local_file / form->GetFile(0)->GetFilename();
             if (stat->folder_map.contains(folder_name) && !stat->folder_map[folder_name])
             {
                 continue;
@@ -64,10 +69,10 @@ namespace MPL::Config
                     continue;
                 }
             }
-            auto file_name = std::format("{}/{:06X}.json", folder_name, form->GetLocalFormID());
+            auto file_name = folder_name / std::format("{:06X}.json", form->GetLocalFormID());
             if (std::filesystem::exists(file_name))
             {
-                auto pch = rfl::json::load<T>(file_name);
+                auto pch = rfl::json::load<T>(file_name.string());
                 if (pch.has_value())
                 {
                     pch->Apply(form);

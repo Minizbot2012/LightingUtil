@@ -43,6 +43,8 @@ SKSEPluginLoad(const SKSE::LoadInterface* a_skse)
     logger::info("Game version : {}", a_skse->RuntimeVersion().string());
     MPL::Hooks::Install();
     SKSE::GetPapyrusInterface()->Register(MPL::Papyrus::Bind);
+    SKSE::GetPapyrusInterface()->Register(MPL::Papyrus::BindWeatherPatcher);
+    SKSE::GetMessagingInterface()->RegisterListener(MPL::WeatherPatcher::OnSKSEMessage);
     auto ser = SKSE::GetSerializationInterface();
     ser->SetUniqueID('LUMA');
     ser->SetSaveCallback(Serialize);

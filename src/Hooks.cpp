@@ -1,3 +1,4 @@
+#include <WeatherPatcher.h>
 #include <Hooking.h>
 #include <Config.h>
 #include <Hooks.h>
